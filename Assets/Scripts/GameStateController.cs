@@ -6,7 +6,7 @@ namespace grannyscape
 
 	public class GameStateController : MonoBehaviour 
 	{
-		enum State
+		public enum State
 		{
 			MainMenu,
 			LevelStart,
@@ -29,6 +29,10 @@ namespace grannyscape
 			case State.MainMenu:
 				break;
 			case State.LevelStart:
+				if (Input.GetKeyDown("space"))
+				{
+					m_gameState = State.LevelRunning;
+				}
 				break;
 			case State.LevelRunning:
 				break;
@@ -37,6 +41,11 @@ namespace grannyscape
 			case State.EndScreen:
 				break;
 			}
+		}
+
+		public State GetGameState()
+		{
+			return m_gameState;
 		}
 	}
 

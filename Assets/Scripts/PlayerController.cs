@@ -13,7 +13,7 @@ namespace grannyscape
 	
 		private bool m_bJump = false;
 		private bool m_bGrounded = false;
-		private bool m_bFalling = false;
+		//private bool m_bFalling = false;
 
 		private bool m_bFrontCollision = false;
 
@@ -21,8 +21,24 @@ namespace grannyscape
 		private Transform m_frontCheck;
 	
 		private float m_lastPositionY = 0;
-
 		private Vector2 m_frontCheckStart = new Vector2(0f, 0f);
+
+		private Animator m_animator;
+
+		private GameStateController m_gameStateController;
+
+		public enum Anim
+		{
+			Idle,
+			Walk,
+			Jump
+		}
+
+		private Anim currentAnim = Anim.Idle;
+
+		// hash the animation state string to save performance
+		private int playerAnimJump =  Animator.StringToHash("playerAnimJump");
+		private int playerAnimMove = Animator.StringToHash("playerAnimMove");
 		
 		void Awake()
 		{
@@ -33,12 +49,23 @@ namespace grannyscape
 		// Use this for initialization
 		void Start () 
 		{
+			m_gameStateController = GameObject.Find("SceneEssentials").GetComponent<GameStateController>();
+
 			m_lastPositionY = transform.position.y;
+
+			m_animator = GetComponentInChildren<Animator>();
+			m_animator.SetBool (playerAnimJump, false);
+			m_animator.SetFloat (playerAnimMove, 0.0f);
 		}
 		
 		// Update is called once per frame
 		void Update () 
 		{
+			if (m_gameStateController.GetGameState() == GameStateController.State.LevelStart) 
+			{
+				return;
+			}
+
 			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
 			m_bGrounded = Physics2D.Linecast(transform.position, m_groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
@@ -47,24 +74,35 @@ namespace grannyscape
 			m_frontCheckStart.y = m_frontCheck.position.y;
 			m_bFrontCollision = Physics2D.Linecast(m_frontCheckStart, m_frontCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-			if(Input.GetButtonDown ("Jump") && m_bGrounded)
+			if (m_bGrounded)
+				m_animator.SetBool(playerAnimJump, false);
+
+			
+			if(Input.GetButtonDown ("Jump") && m_bGrounded && (m_gameStateController.GetGameState() == GameStateController.State.LevelRunning) )
 			{
+				m_animator.SetBool(playerAnimJump, true);
 				m_bJump = true;
 			}
+
 
 			// Check falling
 			if (!m_bGrounded && m_lastPositionY != transform.position.y) 
 			{
-				m_bFalling = true;
+				//m_bFalling = true;
 			}
 			else 
 			{
-				m_bFalling = false;
+				//m_bFalling = false;
 			}
 		}
 
 		void FixedUpdate () 
 		{
+			if (m_gameStateController.GetGameState() == GameStateController.State.LevelStart) 
+			{
+				return;
+			}
+			
 			float dt = Time.deltaTime;
 
 			if (!m_bFrontCollision)
@@ -81,23 +119,22 @@ namespace grannyscape
 				}
 			} 
 
-
 			if(m_bJump)
 			{
-				Debug.Log (jumpHeight);
-				Debug.Log(Physics2D.gravity.y);
-
 				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y));
-				Debug.Log (jumpForce);
 
 				//rigidbody2D.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
 				Vector2 currentVelocity = rigidbody2D.velocity;
 				currentVelocity.y = jumpForce;
 				rigidbody2D.velocity = currentVelocity;
 
-				Debug.Log ("done");
 				m_bJump = false;
+
 			}
+
+			m_animator.SetFloat(playerAnimMove, rigidbody2D.velocity.x);
+
+
 		}
 
 		void OnDrawGizmos() 

@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GUIController : MonoBehaviour 
 {
-	public GUIText velocity;
-
 	public GameObject player;
-
-	// Use this for initialization
-	void Start () 
+	
+	public Slider healthBarSlider;  	
+	public Text gameOverText;   	
+	private bool m_isGameOver = false; 
+	
+	void Start()
 	{
 		
 	}
@@ -16,6 +18,19 @@ public class GUIController : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		velocity.text = "Velocity: " + player.rigidbody2D.velocity.x;
+		if (!m_isGameOver) 
+		{
+			healthBarSlider.value -= .001f;  //reduce health
+			
+			if (healthBarSlider.value < 0) 
+			{
+				m_isGameOver = true;
+			}
+		}
+	}
+
+	public void SetHealth(float health)
+	{
+		healthBarSlider.value = health;
 	}
 }
