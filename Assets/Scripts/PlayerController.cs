@@ -47,7 +47,13 @@ public class PlayerController : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		
+		rigidbody2D.AddForce(Vector2.right * moveForce);
+		//rigidbody2D.velocity.x = Vector2.ClampMagnitude(rigidbody2D.velocity.x, maxSpeed);
+
+		Vector2 v = rigidbody2D.velocity;
+		v.x = Mathf.Clamp(v.x, 0.0f, maxSpeed);
+		rigidbody2D.velocity = v;
+
 		// If the player should jump...
 		if(m_jump)
 		{
@@ -55,18 +61,11 @@ public class PlayerController : MonoBehaviour
 			// Add a vertical force to the player.
 			//rigidbody2D.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
 			Vector2 vv = rigidbody2D.velocity;	
-				vv.y = 200;
-				rigidbody2D.velocity=vv;	
+			vv.y = 200;
+			rigidbody2D.velocity=vv;	
 			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
 			m_jump = false;
 		}
-
-		rigidbody2D.AddForce(Vector2.right * moveForce);
-		//rigidbody2D.velocity.x = Vector2.ClampMagnitude(rigidbody2D.velocity.x, maxSpeed);
-
-		Vector2 v = rigidbody2D.velocity;
-		v.x = Mathf.Clamp(v.x, 0.0f, maxSpeed);
-		rigidbody2D.velocity = v;
 		
 	}
 	
