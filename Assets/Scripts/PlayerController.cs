@@ -9,10 +9,12 @@ namespace grannyscape
 		public float moveSpeed = 4f;
 		public float minSpeed = 2f;
 		public float maxSpeed = 8f;
-		public float jumpForce = 1000f;
-		
+		public float jumpHeight = 2;
+	
 		private bool m_bJump = false;
 		private bool m_bGrounded = false;
+		private bool m_bFalling = false;
+
 		private bool m_bSlidingDown = false;
 
 		private bool m_bFrontCollisionUp = false;
@@ -85,7 +87,18 @@ namespace grannyscape
 
 			if(m_bJump)
 			{
-				rigidbody2D.AddForce(new Vector2(0f, jumpForce));
+				Debug.Log (jumpHeight);
+				Debug.Log(Physics2D.gravity.y);
+
+				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y));
+				Debug.Log (jumpForce);
+
+				//rigidbody2D.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+				Vector2 currentVelocity = rigidbody2D.velocity;
+				currentVelocity.y = jumpForce;
+				rigidbody2D.velocity = currentVelocity;
+
+				Debug.Log ("done");
 				m_bJump = false;
 			}
 		}
