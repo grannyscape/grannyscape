@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
 	public float maxSpeed = 8f;
 	public float jumpForce = 1000f;
 	
+		public float speed = 4f;
+	
 	private bool m_jump = false;	
 	private Transform m_groundCheck;
 	private bool m_grounded = false;
@@ -45,6 +47,28 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	void FixedUpdate () 
+	{
+		float dt = Time.deltaTime;
+		
+		var horizontal = Input.GetAxis("Horizontal");
+		if (horizontal > 0)
+		{
+			transform.Translate(transform.right * speed * dt);
+		}
+		else if (horizontal < 0)
+		{
+			transform.Translate(-transform.right * speed * dt);
+		}
+		
+		if(m_jump)
+		{
+			rigidbody2D.AddForce(new Vector2(0f, jumpForce));
+			m_jump = false;
+		}
+	}
+
+	/*
 	void FixedUpdate()
 	{
 		rigidbody2D.AddForce(Vector2.right * moveForce);
@@ -66,8 +90,8 @@ public class PlayerController : MonoBehaviour
 			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
 			m_jump = false;
 		}
-		
 	}
+	*/
 	
 }
 
