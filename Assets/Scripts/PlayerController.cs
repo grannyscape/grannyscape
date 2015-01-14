@@ -13,12 +13,16 @@ namespace grannyscape
 		
 		private bool m_bJump = false;
 		private bool m_bGrounded = false;
+		private bool m_bSlidingDown = false;
+
 		private bool m_bFrontCollisionUp = false;
 		private bool m_bFrontCollisionDown = false;
 
 		private Transform m_groundCheck;
 		private Transform m_frontCheckUp;
 		private Transform m_frontCheckDown;
+
+		private float m_lastPositionY = 0;
 		
 		void Awake()
 		{
@@ -42,17 +46,9 @@ namespace grannyscape
 			m_bFrontCollisionUp = Physics2D.Linecast(transform.position, m_frontCheckUp.position, 1 << LayerMask.NameToLayer("Ground"));
 			m_bFrontCollisionDown = Physics2D.Linecast(transform.position, m_frontCheckDown.position, 1 << LayerMask.NameToLayer("Ground"));
 			
-			if(Input.GetButtonDown ("Jump"))
+			if(Input.GetButtonDown ("Jump") && m_bGrounded)
 			{
-				if(m_bGrounded)
-				{
-					Debug.Log ("should jump");
-					m_bJump = true;
-				}
-				else
-				{
-					Debug.Log ("Jumping, cannot jump more");
-				}
+				m_bJump = true;
 			}
 		}
 
@@ -60,20 +56,31 @@ namespace grannyscape
 		{
 			float dt = Time.deltaTime;
 
-			if (!m_bFrontCollisionUp && !m_bFrontCollisionDown) 
+			if(!m_bSlidingDown)
 			{
-				transform.Translate (transform.right * moveSpeed * dt);
-			} 
-			else 
+				if (!m_bFrontCollisionUp && !m_bFrontCollisionDown) 
+				{
+					transform.Translate (transform.right * moveSpeed * dt);
+				} 
+				else 
+				{
+					m_bSlidingDown = true;
+					m_lastPositionY = transform.position.y;
+				}
+			}
+
+			if (m_bSlidingDown) 
 			{
-				if(m_bFrontCollisionUp)
+				if(m_lastPositionY >= transform.position.y)
 				{
-					Debug.Log ("ground in front up!");	
+					//transform.Translate (-transform.right * minSpeed * dt);
 				}
-				if(m_bFrontCollisionDown)
-				{
-					Debug.Log ("ground in front down!");
-				}
+				m_lastPositionY = transform.position.y;
+			}
+
+			if (m_bGrounded) 
+			{
+				m_bSlidingDown = false;
 			}
 
 			if(m_bJump)
