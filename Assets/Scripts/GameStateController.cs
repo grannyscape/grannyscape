@@ -15,7 +15,7 @@ namespace grannyscape
 			EndScreen,
 		}
 
-		private State m_gameState;
+		private State m_gameState = State.LevelStart;
 
 		void Start () 
 		{
