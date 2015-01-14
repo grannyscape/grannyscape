@@ -34,6 +34,10 @@ namespace grannyscape
 				m_gameLogic.PowerUpCollected(p.PowerUpType);
 				coll.gameObject.GetComponent<PowerUp>().Hit();
 				break;
+			case "Finish":
+				Debug.Log ("level end");
+				m_gameLogic.LevelFinished();
+				break;
 			default:
 				break;
 			}

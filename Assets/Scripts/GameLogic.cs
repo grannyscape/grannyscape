@@ -31,7 +31,13 @@ namespace grannyscape
 			m_guiController = GetComponent<GUIController>();
 			m_gameStateController = GetComponent<GameStateController>();
 
+			Reset();
+		}
 
+		void Reset()
+		{
+			m_guiController.SetDead(false);
+			m_guiController.LevelFinished(false);
 		}
 		
 		// Update is called once per frame
@@ -41,6 +47,7 @@ namespace grannyscape
 			{
 				m_bDead = true;
 				m_gameStateController.GameState = State.DEAD;
+				m_guiController.SetDead(true);
 			}
 		}
 
@@ -78,6 +85,11 @@ namespace grannyscape
 			}
 		}
 
+		public void LevelFinished()
+		{
+			m_gameStateController.GameState = State.LEVELEND;
+			m_guiController.LevelFinished(true);
+		}
 	
 		void ReduceHealth()
 		{

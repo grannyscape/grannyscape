@@ -12,7 +12,8 @@ namespace grannyscape
 		public Slider healthBarSlider; 
 		public Text moneyText;
 
-		public Text gameOverText;   	
+		public Text gameOverText; 
+		public Text levelFinishedText;
 		
 		void Start()
 		{
@@ -34,6 +35,17 @@ namespace grannyscape
 		{
 			moneyText.text = "Money: " + money;
 		}
+
+		public void SetDead(bool dead)
+		{
+			gameOverText.gameObject.SetActive(dead);
+		}
+
+		public void LevelFinished(bool finished)
+		{
+			levelFinishedText.gameObject.SetActive(finished);
+		}
+			
 	}
 
 }
