@@ -15,27 +15,25 @@ namespace grannyscape
 		private bool m_bGrounded = false;
 		private bool m_bFalling = false;
 
-		private bool m_bSlidingDown = false;
-
-		private bool m_bFrontCollisionUp = false;
-		private bool m_bFrontCollisionDown = false;
+		private bool m_bFrontCollision = false;
 
 		private Transform m_groundCheck;
-		private Transform m_frontCheckUp;
-		private Transform m_frontCheckDown;
-
+		private Transform m_frontCheck;
+	
 		private float m_lastPositionY = 0;
+
+		private Vector2 m_frontCheckStart = new Vector2(0f, 0f);
 		
 		void Awake()
 		{
 			m_groundCheck = transform.Find("groundCheck");
-			m_frontCheckUp = transform.Find("frontCheckUp");
-			m_frontCheckDown = transform.Find("frontCheckDown");
+			m_frontCheck = transform.Find("frontCheck");
 		}
 
 		// Use this for initialization
 		void Start () 
 		{
+			m_lastPositionY = transform.position.y;
 		}
 		
 		// Update is called once per frame
@@ -44,13 +42,24 @@ namespace grannyscape
 			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
 			m_bGrounded = Physics2D.Linecast(transform.position, m_groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-			// Check front collisions
-			m_bFrontCollisionUp = Physics2D.Linecast(transform.position, m_frontCheckUp.position, 1 << LayerMask.NameToLayer("Ground"));
-			m_bFrontCollisionDown = Physics2D.Linecast(transform.position, m_frontCheckDown.position, 1 << LayerMask.NameToLayer("Ground"));
-			
+			// Check front collision
+			m_frontCheckStart.x = transform.position.x;
+			m_frontCheckStart.y = m_frontCheck.position.y;
+			m_bFrontCollision = Physics2D.Linecast(m_frontCheckStart, m_frontCheck.position, 1 << LayerMask.NameToLayer("Ground"));
+
 			if(Input.GetButtonDown ("Jump") && m_bGrounded)
 			{
 				m_bJump = true;
+			}
+
+			// Check falling
+			if (!m_bGrounded && m_lastPositionY != transform.position.y) 
+			{
+				m_bFalling = true;
+			}
+			else 
+			{
+				m_bFalling = false;
 			}
 		}
 
@@ -58,32 +67,20 @@ namespace grannyscape
 		{
 			float dt = Time.deltaTime;
 
-			if(!m_bSlidingDown)
+			if (!m_bFrontCollision)
 			{
-				if (!m_bFrontCollisionUp && !m_bFrontCollisionDown) 
-				{
-					transform.Translate (transform.right * moveSpeed * dt);
-				} 
-				else 
-				{
-					m_bSlidingDown = true;
-					m_lastPositionY = transform.position.y;
-				}
-			}
+				//transform.Translate (transform.right * moveSpeed * dt);
 
-			if (m_bSlidingDown) 
-			{
-				if(m_lastPositionY >= transform.position.y)
-				{
-					//transform.Translate (-transform.right * minSpeed * dt);
-				}
-				m_lastPositionY = transform.position.y;
-			}
+				rigidbody2D.AddForce(Vector2.right * moveSpeed * 2);
 
-			if (m_bGrounded) 
-			{
-				m_bSlidingDown = false;
-			}
+				if(rigidbody2D.velocity.magnitude > maxSpeed)
+				{
+					Vector2 currentVelocity = rigidbody2D.velocity;
+					currentVelocity = rigidbody2D.velocity.normalized * maxSpeed;
+					rigidbody2D.velocity = currentVelocity;
+				}
+			} 
+
 
 			if(m_bJump)
 			{
@@ -109,8 +106,8 @@ namespace grannyscape
 			{
 				Gizmos.color = Color.yellow;
 				Gizmos.DrawLine (transform.position, m_groundCheck.transform.position);
-				Gizmos.DrawLine (transform.position, m_frontCheckUp.transform.position);
-				Gizmos.DrawLine (transform.position, m_frontCheckDown.transform.position);
+				Gizmos.color = Color.blue;
+				Gizmos.DrawLine (m_frontCheckStart, m_frontCheck.transform.position);
 			}
 		}
 
