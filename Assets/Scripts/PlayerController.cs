@@ -13,28 +13,16 @@ namespace grannyscape
 	
 		private bool m_bJump = false;
 		private bool m_bGrounded = false;
-		//private bool m_bFalling = false;
-
 		private bool m_bFrontCollision = false;
 
 		private Transform m_groundCheck;
 		private Transform m_frontCheck;
-	
-		private float m_lastPositionY = 0;
 		private Vector2 m_frontCheckStart = new Vector2(0f, 0f);
 
 		private Animator m_animator;
 
 		private GameStateController m_gameStateController;
-
-		public enum Anim
-		{
-			Idle,
-			Walk,
-			Jump
-		}
-
-		private Anim currentAnim = Anim.Idle;
+		private GameLogic m_gameLogic;
 
 		// hash the animation state string to save performance
 		private int playerAnimJump =  Animator.StringToHash("playerAnimJump");
@@ -49,9 +37,9 @@ namespace grannyscape
 		// Use this for initialization
 		void Start () 
 		{
-			m_gameStateController = GameObject.Find("SceneEssentials").GetComponent<GameStateController>();
-
-			m_lastPositionY = transform.position.y;
+			GameObject sceneEssentials = GameObject.Find("SceneEssentials");
+			m_gameStateController = sceneEssentials.GetComponent<GameStateController>();
+			m_gameLogic = sceneEssentials.GetComponent<GameLogic>();
 
 			m_animator = GetComponentInChildren<Animator>();
 			m_animator.SetBool (playerAnimJump, false);
@@ -61,7 +49,7 @@ namespace grannyscape
 		// Update is called once per frame
 		void Update () 
 		{
-			if (m_gameStateController.GetGameState() == GameStateController.State.LevelStart) 
+			if (m_gameStateController.GameState != State.LEVELRUNNING) 
 			{
 				return;
 			}
@@ -72,43 +60,42 @@ namespace grannyscape
 			// Check front collision
 			m_frontCheckStart.x = transform.position.x;
 			m_frontCheckStart.y = m_frontCheck.position.y;
-			m_bFrontCollision = Physics2D.Linecast(m_frontCheckStart, m_frontCheck.position, 1 << LayerMask.NameToLayer("Ground"));
+			//m_bFrontCollision = Physics2D.Linecast(m_frontCheckStart, m_frontCheck.position, 1 << LayerMask.NameToLayer("Ground"));
+
+			RaycastHit2D hit = Physics2D.CircleCast(m_frontCheck.position, 0.8f, Vector2.right);
+			if(hit && hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+			{
+				//Debug.Log("hit: " + hit.collider.name);
+				m_bFrontCollision = true;
+			}
+			else
+			{
+				m_bFrontCollision = false;
+			}
+
 
 			if (m_bGrounded)
+			{
 				m_animator.SetBool(playerAnimJump, false);
+			}
 
 			
-			if(Input.GetButtonDown ("Jump") && m_bGrounded && (m_gameStateController.GetGameState() == GameStateController.State.LevelRunning) )
+			if(Input.GetButtonDown ("Jump") && m_bGrounded && (m_gameStateController.GameState == State.LEVELRUNNING) )
 			{
 				m_animator.SetBool(playerAnimJump, true);
 				m_bJump = true;
-			}
-
-
-			// Check falling
-			if (!m_bGrounded && m_lastPositionY != transform.position.y) 
-			{
-				//m_bFalling = true;
-			}
-			else 
-			{
-				//m_bFalling = false;
 			}
 		}
 
 		void FixedUpdate () 
 		{
-			if (m_gameStateController.GetGameState() == GameStateController.State.LevelStart) 
+			if (m_gameStateController.GameState != State.LEVELRUNNING) 
 			{
 				return;
 			}
-			
-			float dt = Time.deltaTime;
 
 			if (!m_bFrontCollision)
 			{
-				//transform.Translate (transform.right * moveSpeed * dt);
-
 				rigidbody2D.AddForce(Vector2.right * moveSpeed * 2);
 
 				if(rigidbody2D.velocity.magnitude > maxSpeed)
@@ -121,15 +108,21 @@ namespace grannyscape
 
 			if(m_bJump)
 			{
-				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y));
+				float jumpRatio = rigidbody2D.velocity.magnitude / maxSpeed;
+				Mathf.Clamp(jumpRatio, 0.5f, 1f);
 
-				//rigidbody2D.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y)) * jumpRatio;
 				Vector2 currentVelocity = rigidbody2D.velocity;
 				currentVelocity.y = jumpForce;
 				rigidbody2D.velocity = currentVelocity;
 
 				m_bJump = false;
 
+			}
+
+			if(rigidbody2D.velocity.x < 0.001f && !m_bFrontCollision && !m_bGrounded)
+			{
+				rigidbody2D.AddForce (Vector2.up * 10);
 			}
 
 			m_animator.SetFloat(playerAnimMove, rigidbody2D.velocity.x);
@@ -144,34 +137,10 @@ namespace grannyscape
 				Gizmos.color = Color.yellow;
 				Gizmos.DrawLine (transform.position, m_groundCheck.transform.position);
 				Gizmos.color = Color.blue;
-				Gizmos.DrawLine (m_frontCheckStart, m_frontCheck.transform.position);
+				Gizmos.DrawWireSphere(m_frontCheck.position, 0.8f);
+
 			}
 		}
 
-		/*
-		void FixedUpdate()
-		{
-			rigidbody2D.AddForce(Vector2.right * moveForce);
-			//rigidbody2D.velocity.x = Vector2.ClampMagnitude(rigidbody2D.velocity.x, maxSpeed);
-
-			Vector2 v = rigidbody2D.velocity;
-			v.x = Mathf.Clamp(v.x, 0.0f, maxSpeed);
-			rigidbody2D.velocity = v;
-
-			// If the player should jump...
-			if(m_jump)
-			{
-				Debug.Log ("adding jump force");
-				// Add a vertical force to the player.
-				//rigidbody2D.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
-				Vector2 vv = rigidbody2D.velocity;	
-				vv.y = 200;
-				rigidbody2D.velocity=vv;	
-				// Make sure the player can't jump again until the jump conditions from Update are satisfied.
-				m_jump = false;
-			}
-		}
-		*/
-		
 	}
 }

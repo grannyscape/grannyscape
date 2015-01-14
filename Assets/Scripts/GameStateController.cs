@@ -3,50 +3,68 @@ using System.Collections;
 
 namespace grannyscape
 {
+	public enum State
+	{
+		MAINMENU,
+		LEVELSTART,
+		LEVELRUNNING,
+		LEVELEND,
+		DEAD,
+		ENDMENU,
+	}
 
 	public class GameStateController : MonoBehaviour 
 	{
-		public enum State
-		{
-			MainMenu,
-			LevelStart,
-			LevelRunning,
-			LevelEnd,
-			EndScreen,
-		}
+		private State m_gameState = State.LEVELSTART;
+		private GameLogic m_gameLogic;
 
-		private State m_gameState = State.LevelStart;
+		private bool m_bStateChanged = true;
 
 		void Start () 
 		{
-		
+			m_gameLogic = GetComponent<GameLogic>();
 		}
 
 		void Update () 
 		{
 			switch (m_gameState) 
 			{
-			case State.MainMenu:
+			case State.MAINMENU:
 				break;
-			case State.LevelStart:
-				if (Input.GetKeyDown("space"))
+			case State.LEVELSTART:
+				if (Input.anyKeyDown)
 				{
-					m_gameState = State.LevelRunning;
+					GameState = State.LEVELRUNNING;
 				}
 				break;
-			case State.LevelRunning:
+			case State.LEVELRUNNING:
 				break;
-			case State.LevelEnd:
+			case State.LEVELEND:
 				break;
-			case State.EndScreen:
+			case State.DEAD:
 				break;
+			case State.ENDMENU:
+				break;
+			}
+
+			// notify game logic if the game state has changed
+			if(m_bStateChanged)
+			{
+				m_gameLogic.StateChanged();
+				m_bStateChanged = false;
 			}
 		}
 
-		public State GetGameState()
+		public State GameState
 		{
-			return m_gameState;
+			get { return m_gameState; }
+			set 
+			{ 
+				m_gameState = value; 
+				m_bStateChanged = true;
+			}
 		}
+
 	}
 
 }

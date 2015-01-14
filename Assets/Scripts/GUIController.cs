@@ -2,35 +2,38 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class GUIController : MonoBehaviour 
+namespace grannyscape
 {
-	public GameObject player;
-	
-	public Slider healthBarSlider;  	
-	public Text gameOverText;   	
-	private bool m_isGameOver = false; 
-	
-	void Start()
+
+	public class GUIController : MonoBehaviour 
 	{
+		public GameObject player;
 		
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		if (!m_isGameOver) 
+		public Slider healthBarSlider; 
+		public Text moneyText;
+
+		public Text gameOverText;   	
+		
+		void Start()
 		{
-			healthBarSlider.value -= .001f;  //reduce health
 			
-			if (healthBarSlider.value < 0) 
-			{
-				m_isGameOver = true;
-			}
+		}
+		
+		// Update is called once per frame
+		void Update () 
+		{
+
+		}
+
+		public void SetHealth(float health)
+		{
+			healthBarSlider.value = health;
+		}
+
+		public void SetMoney(int money)
+		{
+			moneyText.text = "Money: " + money;
 		}
 	}
 
-	public void SetHealth(float health)
-	{
-		healthBarSlider.value = health;
-	}
 }
