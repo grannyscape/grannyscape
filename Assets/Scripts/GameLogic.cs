@@ -9,8 +9,8 @@ namespace grannyscape
 	{
 		public float reduceHealthPerSecond = 0.005f;
 		public float coffeecupHealthBonus = 0.3f;
-		public float speedIncrease = 2f;
-		public float speedIncreaseTime = 2f;
+		public float speedChange = 2f;
+		public float speedChangeTime = 2f;
 
 		private float m_health = 1f;
 		private int m_money = 0;
@@ -57,9 +57,15 @@ namespace grannyscape
 				SetDead();
 			}
 
-			if (m_bFastSpeed && m_elapsedTime >= speedIncreaseTime) 
+			if (m_bFastSpeed && m_elapsedTime >= speedChangeTime) 
 			{
 				StopFastSpeed();
+
+			}
+
+			if (m_bSlowSpeed && m_elapsedTime >= speedChangeTime) 
+			{
+				StopSlowSpeed();
 			}
 		}
 
@@ -89,13 +95,15 @@ namespace grannyscape
 				m_guiController.SetHealth(m_health);
 				break;
 			case PowerUp.Type.SPEEDPILL:
-				m_playerController.ChangeMaxSpeed(speedIncrease);
+				m_playerController.ChangeMaxSpeed(speedChange);
 				m_bFastSpeed = true;
 				m_fastSpeedUpgrades++;
 				m_elapsedTime = 0f;
 				break;
 			case PowerUp.Type.SLOWPILL:
 				StopFastSpeed();
+				m_bSlowSpeed = true;
+				Time.timeScale = 0.5f;
 				m_elapsedTime = 0f;
 				break;
 			case PowerUp.Type.PEASOUP:
@@ -126,12 +134,18 @@ namespace grannyscape
 		{
 			for(int i=0; i<m_fastSpeedUpgrades; i++)
 			{
-				m_playerController.ChangeMaxSpeed(-speedIncrease);
+				m_playerController.ChangeMaxSpeed(-speedChange);
 			}
 			m_fastSpeedUpgrades = 0;
 			m_bFastSpeed = false;
 			
 			Debug.Log ("Fast pill ended");
+		}
+
+		void StopSlowSpeed()
+		{
+			Time.timeScale = 1f;
+			m_bSlowSpeed = false;
 		}
 	}
 

@@ -68,9 +68,11 @@ namespace grannyscape
 			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
 			//m_bGrounded = Physics2D.Linecast(transform.position, m_groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-			RaycastHit2D groundHit = Physics2D.CircleCast(m_groundCheck.position, 0.5f, -Vector2.up, 2f, LayerMask.GetMask ("Ground"));
+			m_bGrounded = false;
+			RaycastHit2D groundHit = Physics2D.CircleCast(transform.position, 0.5f, -Vector2.up, 0.6f, LayerMask.GetMask ("Ground"));
 			if (groundHit) 
 			{
+				Debug.Log("groundhit: " + groundHit.collider.name);
 				m_bGrounded = true;
 			}
 		
@@ -81,10 +83,10 @@ namespace grannyscape
 			//m_bFrontCollision = Physics2D.Linecast(m_frontCheckStart, m_frontCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
 			m_bFrontCollision = false;
-			RaycastHit2D wallHit = Physics2D.CircleCast(transform.position, 0.8f, Vector2.right, 2f, LayerMask.GetMask("Ground"));
+			RaycastHit2D wallHit = Physics2D.CircleCast(transform.position, 0.8f, Vector2.right, 0.2f, LayerMask.GetMask("Ground"));
 			if(wallHit)
 			{
-				Debug.Log("hit: " + wallHit.collider.name);
+				Debug.Log("wallhit: " + wallHit.collider.name);
 				m_bFrontCollision = true;
 			}
 
@@ -137,11 +139,12 @@ namespace grannyscape
 
 			}
 
-			if(rigidbody2D.velocity.x < 0.001f && !m_bGrounded && m_bFrontCollision)
+			/*
+			if(rigidbody2D.velocity.x < 0.001f && !m_bGrounded)
 			{
 				Debug.Log ("adding up force");
 				rigidbody2D.AddForce (Vector2.up * 10f, ForceMode2D.Force);
-			}
+			}*/
 
 			if (useAnimations) 
 			{
@@ -154,11 +157,14 @@ namespace grannyscape
 			if (Application.isPlaying) 
 			{
 				Gizmos.color = Color.yellow;
-				Gizmos.DrawLine (transform.position, m_groundCheck.transform.position);
-				Gizmos.color = Color.blue;
 
+				Vector3 s = transform.position;
+				s.y = s.y - 0.6f;
+				Gizmos.DrawWireSphere(s, 0.5f);
+
+				Gizmos.color = Color.blue;
 				Vector3 p = transform.position;
-				p.x = p.x + 1f;
+				p.x = p.x + 0.2f;
 				Gizmos.DrawWireSphere(p, 0.8f);
 			}
 		}
