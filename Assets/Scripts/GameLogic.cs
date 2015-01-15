@@ -42,9 +42,7 @@ namespace grannyscape
 		{
 			if(m_health <= 0 && m_gameStateController.GameState == State.LEVELRUNNING)
 			{
-				m_bDead = true;
-				m_gameStateController.GameState = State.DEAD;
-				m_guiController.SetDead(true);
+				SetDead();
 			}
 		}
 
@@ -80,6 +78,13 @@ namespace grannyscape
 			case PowerUp.Type.PEASOUP:
 				break;
 			}
+		}
+
+		public void SetDead()
+		{
+			m_bDead = true;
+			m_gameStateController.GameState = State.DEAD;
+			m_guiController.SetDead (true);
 		}
 
 		public void LevelFinished()

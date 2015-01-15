@@ -30,6 +30,8 @@ namespace grannyscape
 
 		public bool useAnimations = false;
 
+		public float deathLevel = -1;
+
 		void Awake()
 		{
 			m_groundCheck = transform.Find("groundCheck");
@@ -57,6 +59,11 @@ namespace grannyscape
 			if (m_gameStateController.GameState != State.LEVELRUNNING) 
 			{
 				return;
+			}
+
+			if (transform.position.y < deathLevel) 
+			{
+				m_gameLogic.SetDead();
 			}
 
 			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
@@ -109,7 +116,7 @@ namespace grannyscape
 			{
 				rigidbody2D.AddForce(Vector2.right * moveSpeed * 2);
 
-				if(rigidbody2D.velocity.magnitude > maxSpeed)
+				if(rigidbody2D.velocity.magnitude > moveSpeed)
 				{
 					Vector2 currentVelocity = rigidbody2D.velocity;
 					currentVelocity = rigidbody2D.velocity.normalized * maxSpeed;
