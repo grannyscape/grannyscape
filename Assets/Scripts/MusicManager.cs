@@ -18,7 +18,7 @@ namespace grannyscape
 		public AudioClip winMusic;
 
 		private AudioSource m_audioSource;
-		private Dictionary<int, AudioClip> m_clips;
+		private Dictionary<int, AudioClip> m_clips = new Dictionary<int, AudioClip>();
 
 
 		// Use this for initialization
@@ -27,14 +27,15 @@ namespace grannyscape
 			m_audioSource = GetComponent<AudioSource> ();
 			m_audioSource.loop = true;
 
-			//m_clips.Add (Music.MENU, menuMusic);
-			//m_clips.Add (Music.GAME, gameMusic);
-			//m_clips.Add (Music.WIN, winMusic);
+			m_clips.Add ((int)Music.MENU, menuMusic);
+			m_clips.Add ((int)Music.GAME, gameMusic);
+			m_clips.Add ((int)Music.WIN, winMusic);
 		}
 		
 		public void playMusic(Music clip)
 		{
-			//m_audioSource.Play (m_clips [clip]);
+			m_audioSource.clip = m_clips[(int)clip];
+			m_audioSource.Play ();
 		}
 	}
 

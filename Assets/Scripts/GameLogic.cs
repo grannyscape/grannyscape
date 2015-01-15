@@ -29,8 +29,6 @@ namespace grannyscape
 		{
 			m_guiController = GetComponent<GUIController>();
 			m_gameStateController = GetComponent<GameStateController>();
-
-			Reset();
 		}
 
 		void Reset()
