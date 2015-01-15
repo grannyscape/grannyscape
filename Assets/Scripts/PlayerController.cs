@@ -28,7 +28,7 @@ namespace grannyscape
 		// hash the animation state string to save performance
 		private int playerAnimJump =  Animator.StringToHash("playerAnimJump");
 		private int playerAnimMove = Animator.StringToHash("playerAnimMove");
-
+		private int playerAnimAttack = Animator.StringToHash("playerAnimAttack");
 		public bool useAnimations = false;
 		
 		void Awake()
@@ -75,6 +75,7 @@ namespace grannyscape
 			{
 				//Debug.Log("groundhit: " + groundHit.collider.name);
 				m_bGrounded = true;
+				m_animator.SetBool (playerAnimJump, false);
 			}
 		
 
@@ -97,6 +98,11 @@ namespace grannyscape
 				{
 					m_animator.SetBool(playerAnimJump, false);
 				}
+			}
+			m_animator.SetBool(playerAnimAttack, false);
+			if (Input.GetKeyDown (KeyCode .A)) 
+			{
+				m_animator.SetBool(playerAnimAttack, true);
 			}
 
 			if(Input.GetButtonDown ("Jump") && (m_gameStateController.GameState == State.LEVELRUNNING) )
