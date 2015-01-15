@@ -10,19 +10,10 @@ namespace grannyscape
 		void Start()
 		{
 			m_gameLogic = GameObject.Find ("SceneEssentials").GetComponent<GameLogic>();
+		
 		}
 
-		void OnCollisionEnter2D(Collision2D coll) 
-		{
-			switch(coll.collider.tag)
-			{
-			case "Enemy":
-				//throw granny backwards
 
-			default:
-				break;
-			}
-		}
 
 		void OnTriggerEnter2D(Collider2D coll)
 		{

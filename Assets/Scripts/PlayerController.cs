@@ -113,6 +113,7 @@ namespace grannyscape
 
 			if (!m_bFrontCollision)
 			{
+				Debug.Log ("adding x force!");
 				rigidbody2D.AddForce(Vector2.right * moveSpeed * 2);
 
 				if(rigidbody2D.velocity.magnitude > moveSpeed)
@@ -125,10 +126,7 @@ namespace grannyscape
 
 			if(m_bJump)
 			{
-				float jumpRatio = rigidbody2D.velocity.magnitude / moveSpeed;
-				Mathf.Clamp(jumpRatio, 0.5f, 1f);
-
-				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y)) * jumpRatio;
+				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y));
 				Vector2 currentVelocity = rigidbody2D.velocity;
 				currentVelocity.y = jumpForce;
 				rigidbody2D.velocity = currentVelocity;
@@ -140,7 +138,7 @@ namespace grannyscape
 			if(rigidbody2D.velocity.x < 0.001f && !m_bGrounded)
 			{
 				Debug.Log ("adding up force");
-				rigidbody2D.AddForce (Vector2.up * 10f, ForceMode2D.Force);
+				rigidbody2D.AddForce (Vector2.up * 100f, ForceMode2D.Force);
 			}
 
 			if (useAnimations) 
@@ -157,7 +155,18 @@ namespace grannyscape
 				Gizmos.DrawLine (transform.position, m_groundCheck.transform.position);
 				Gizmos.color = Color.blue;
 				Gizmos.DrawWireSphere(m_frontCheck.position, 0.8f);
+			}
+		}
 
+		void OnCollisionEnter2D(Collision2D coll) 
+		{
+			switch(coll.collider.tag)
+			{
+			case "Enemy":
+				rigidbody2D.AddForce(-Vector2.right * 10f, ForceMode2D.Impulse);
+				break;
+			default:
+				break;
 			}
 		}
 

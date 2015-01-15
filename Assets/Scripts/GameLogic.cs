@@ -12,16 +12,15 @@ namespace grannyscape
 		public float speedIncrease = 2f;
 		public float speedIncreaseTime = 2f;
 
-	
-
 		private float m_health = 1f;
 		private int m_money = 0;
 
-
 		//private bool m_bDead = false;
 		private bool m_bFastSpeed = false;
+		private bool m_bSlowSpeed = false;
 
-		private float m_fastSpeedStartTime = 0f;
+		private float m_elapsedTime = 0f;
+		private float m_speedChangeStartTime = 0f;
 		private int m_fastSpeedUpgrades = 0;
 
 		private PlayerController m_playerController;
@@ -51,24 +50,16 @@ namespace grannyscape
 		// Update is called once per frame
 		void Update () 
 		{
+			m_elapsedTime = m_elapsedTime + Time.deltaTime;
+
 			if(m_health <= 0 && m_gameStateController.GameState == State.LEVELRUNNING)
 			{
 				SetDead();
 			}
 
-			if (m_bFastSpeed) 
+			if (m_bFastSpeed && m_elapsedTime >= speedIncreaseTime) 
 			{
-				if(Time.time - m_fastSpeedStartTime >= speedIncreaseTime)
-				{
-					for(int i=0; i<m_fastSpeedUpgrades; i++)
-					{
-						m_playerController.ChangeMaxSpeed(-speedIncrease);
-					}
-					m_fastSpeedUpgrades = 0;
-					m_bFastSpeed = false;
-
-					Debug.Log ("Fast pill ended");
-				}
+				StopFastSpeed();
 			}
 		}
 
@@ -100,10 +91,12 @@ namespace grannyscape
 			case PowerUp.Type.SPEEDPILL:
 				m_playerController.ChangeMaxSpeed(speedIncrease);
 				m_bFastSpeed = true;
-				m_fastSpeedStartTime = Time.time;
 				m_fastSpeedUpgrades++;
+				m_elapsedTime = 0f;
 				break;
 			case PowerUp.Type.SLOWPILL:
+				StopFastSpeed();
+				m_elapsedTime = 0f;
 				break;
 			case PowerUp.Type.PEASOUP:
 				break;
@@ -127,6 +120,18 @@ namespace grannyscape
 		{
 			m_health = m_health - reduceHealthPerSecond;
 			m_guiController.SetHealth(m_health);
+		}
+
+		void StopFastSpeed()
+		{
+			for(int i=0; i<m_fastSpeedUpgrades; i++)
+			{
+				m_playerController.ChangeMaxSpeed(-speedIncrease);
+			}
+			m_fastSpeedUpgrades = 0;
+			m_bFastSpeed = false;
+			
+			Debug.Log ("Fast pill ended");
 		}
 	}
 
