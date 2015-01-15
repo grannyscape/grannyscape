@@ -10,6 +10,7 @@ namespace grannyscape
 		private GameObject m_player;
 		
 		private GameObject m_healthBarSlider; 
+		private GameObject m_peasoupSlider;
 		private GameObject m_moneyText;
 
 		private GameObject m_gameOverText; 
@@ -21,6 +22,9 @@ namespace grannyscape
 
 			m_healthBarSlider = GameObject.Find ("HealthSlider");
 			m_moneyText = GameObject.Find ("MoneyText");
+
+			m_peasoupSlider = GameObject.Find ("PeasoupSlider");
+
 			m_gameOverText = GameObject.Find ("GameOver");
 			m_levelFinishedText = GameObject.Find ("LevelComplete");
 
@@ -48,6 +52,10 @@ namespace grannyscape
 			m_levelFinishedText.SetActive(finished);
 		}
 			
+		public void SetPeasoup(float peasoup)
+		{
+			m_peasoupSlider.GetComponent<Slider>().value = peasoup;
+		}
 	}
 
 }

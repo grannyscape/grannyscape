@@ -12,6 +12,7 @@ namespace grannyscape
 		public float deathLevel = -1;
 	
 		private bool m_bJump = false;
+		private bool m_bDoubleJump = false;
 		private bool m_bGrounded = false;
 		private bool m_bFrontCollision = false;
 
@@ -72,7 +73,7 @@ namespace grannyscape
 			RaycastHit2D groundHit = Physics2D.CircleCast(transform.position, 0.5f, -Vector2.up, 0.6f, LayerMask.GetMask ("Ground"));
 			if (groundHit) 
 			{
-				Debug.Log("groundhit: " + groundHit.collider.name);
+				//Debug.Log("groundhit: " + groundHit.collider.name);
 				m_bGrounded = true;
 			}
 		
@@ -86,7 +87,7 @@ namespace grannyscape
 			RaycastHit2D wallHit = Physics2D.CircleCast(transform.position, 0.8f, Vector2.right, 0.2f, LayerMask.GetMask("Ground"));
 			if(wallHit)
 			{
-				Debug.Log("wallhit: " + wallHit.collider.name);
+				//Debug.Log("wallhit: " + wallHit.collider.name);
 				m_bFrontCollision = true;
 			}
 
@@ -98,13 +99,23 @@ namespace grannyscape
 				}
 			}
 
-			if(Input.GetButtonDown ("Jump") && m_bGrounded && (m_gameStateController.GameState == State.LEVELRUNNING) )
+			if(Input.GetButtonDown ("Jump") && (m_gameStateController.GameState == State.LEVELRUNNING) )
 			{
+				Debug.Log("jump!!");
 				if (useAnimations) 
 				{	
 					m_animator.SetBool(playerAnimJump, true);
 				}
-				m_bJump = true;
+				if(m_bGrounded)
+				{
+					m_bJump = true;
+				}
+				else if(m_gameLogic.Peasoup > 0)
+				{
+					Debug.Log("doubleJump!!");
+					m_gameLogic.RemovePeasoup();
+					m_bJump = true;
+				}
 			}
 		}
 
@@ -130,13 +141,14 @@ namespace grannyscape
 
 			if(m_bJump)
 			{
+				Debug.Log ("jump velocity add!");
+
 				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y));
 				Vector2 currentVelocity = rigidbody2D.velocity;
 				currentVelocity.y = jumpForce;
 				rigidbody2D.velocity = currentVelocity;
 
 				m_bJump = false;
-
 			}
 
 			/*

@@ -14,13 +14,13 @@ namespace grannyscape
 
 		private float m_health = 1f;
 		private int m_money = 0;
+		private int m_peasoup = 0;
 
 		//private bool m_bDead = false;
 		private bool m_bFastSpeed = false;
 		private bool m_bSlowSpeed = false;
 
 		private float m_elapsedTime = 0f;
-		private float m_speedChangeStartTime = 0f;
 		private int m_fastSpeedUpgrades = 0;
 
 		private PlayerController m_playerController;
@@ -45,6 +45,11 @@ namespace grannyscape
 		{
 			m_guiController.SetDead(false);
 			m_guiController.LevelFinished(false);
+		}
+
+		public int Peasoup
+		{
+			get { return m_peasoup; }
 		}
 		
 		// Update is called once per frame
@@ -107,6 +112,7 @@ namespace grannyscape
 				m_elapsedTime = 0f;
 				break;
 			case PowerUp.Type.PEASOUP:
+				AddPeasoup();
 				break;
 			}
 		}
@@ -146,6 +152,25 @@ namespace grannyscape
 		{
 			Time.timeScale = 1f;
 			m_bSlowSpeed = false;
+		}
+
+		void AddPeasoup()
+		{
+			if (m_peasoup < 5) 
+			{
+				m_peasoup = m_peasoup + 1;
+			}
+
+			m_guiController.SetPeasoup((float)m_peasoup/4);
+		}
+
+		public void RemovePeasoup()
+		{
+			if (m_peasoup > 0) 
+			{
+				m_peasoup = m_peasoup - 1;
+			}
+			m_guiController.SetPeasoup ((float)m_peasoup / 4);
 		}
 	}
 
