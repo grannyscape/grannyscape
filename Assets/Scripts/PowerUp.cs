@@ -17,18 +17,8 @@ namespace grannyscape
 
 		public Type powerUpType = Type.COIN;
 		public GameObject hitEffectPrefab;
+		public AudioClip[] soundEffects;
 
-		// Use this for initialization
-		void Start () 
-		{
-		
-		}
-		
-		// Update is called once per frame
-		void Update () 
-		{
-		
-		}
 
 		public PowerUp.Type PowerUpType
 		{
@@ -37,6 +27,10 @@ namespace grannyscape
 
 		public void Hit()
 		{
+			if (soundEffects.Length > 0) 
+			{
+				AudioSource.PlayClipAtPoint (soundEffects [Random.Range (0, soundEffects.Length - 1)], Camera.main.transform.position);
+			}
 			Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
 			Destroy(gameObject);
 		}
