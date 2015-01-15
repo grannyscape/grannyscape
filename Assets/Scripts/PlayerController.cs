@@ -66,24 +66,27 @@ namespace grannyscape
 			}
 
 			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
-			m_bGrounded = Physics2D.Linecast(transform.position, m_groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
+			//m_bGrounded = Physics2D.Linecast(transform.position, m_groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
+
+			RaycastHit2D groundHit = Physics2D.CircleCast(m_groundCheck.position, 0.5f, -Vector2.up, 2f, LayerMask.GetMask ("Ground"));
+			if (groundHit) 
+			{
+				m_bGrounded = true;
+			}
+		
 
 			// Check front collision
-			m_frontCheckStart.x = transform.position.x;
-			m_frontCheckStart.y = m_frontCheck.position.y;
+			//m_frontCheckStart.x = transform.position.x;
+			//m_frontCheckStart.y = m_frontCheck.position.y;
 			//m_bFrontCollision = Physics2D.Linecast(m_frontCheckStart, m_frontCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-			RaycastHit2D hit = Physics2D.CircleCast(m_frontCheck.position, 0.8f, Vector2.right);
-			if(hit && hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+			m_bFrontCollision = false;
+			RaycastHit2D wallHit = Physics2D.CircleCast(transform.position, 0.8f, Vector2.right, 2f, LayerMask.GetMask("Ground"));
+			if(wallHit)
 			{
-				//Debug.Log("hit: " + hit.collider.name);
+				Debug.Log("hit: " + wallHit.collider.name);
 				m_bFrontCollision = true;
 			}
-			else
-			{
-				m_bFrontCollision = false;
-			}
-
 
 			if (m_bGrounded)
 			{
@@ -93,7 +96,6 @@ namespace grannyscape
 				}
 			}
 
-			
 			if(Input.GetButtonDown ("Jump") && m_bGrounded && (m_gameStateController.GameState == State.LEVELRUNNING) )
 			{
 				if (useAnimations) 
@@ -113,6 +115,7 @@ namespace grannyscape
 
 			if (!m_bFrontCollision)
 			{
+
 				rigidbody2D.AddForce(Vector2.right * moveSpeed * 2);
 
 				if(rigidbody2D.velocity.magnitude > moveSpeed)
@@ -134,7 +137,7 @@ namespace grannyscape
 
 			}
 
-			if(rigidbody2D.velocity.x < 0.001f && !m_bGrounded)
+			if(rigidbody2D.velocity.x < 0.001f && !m_bGrounded && m_bFrontCollision)
 			{
 				Debug.Log ("adding up force");
 				rigidbody2D.AddForce (Vector2.up * 10f, ForceMode2D.Force);
@@ -153,7 +156,10 @@ namespace grannyscape
 				Gizmos.color = Color.yellow;
 				Gizmos.DrawLine (transform.position, m_groundCheck.transform.position);
 				Gizmos.color = Color.blue;
-				Gizmos.DrawWireSphere(m_frontCheck.position, 0.8f);
+
+				Vector3 p = transform.position;
+				p.x = p.x + 1f;
+				Gizmos.DrawWireSphere(p, 0.8f);
 			}
 		}
 
