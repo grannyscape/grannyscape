@@ -27,7 +27,9 @@ namespace grannyscape
 		// hash the animation state string to save performance
 		private int playerAnimJump =  Animator.StringToHash("playerAnimJump");
 		private int playerAnimMove = Animator.StringToHash("playerAnimMove");
-		
+
+		public bool useAnimations = false;
+
 		void Awake()
 		{
 			m_groundCheck = transform.Find("groundCheck");
@@ -41,9 +43,12 @@ namespace grannyscape
 			m_gameStateController = sceneEssentials.GetComponent<GameStateController>();
 			m_gameLogic = sceneEssentials.GetComponent<GameLogic>();
 
-			m_animator = GetComponentInChildren<Animator>();
-			m_animator.SetBool (playerAnimJump, false);
-			m_animator.SetFloat (playerAnimMove, 0.0f);
+			if (useAnimations) 
+			{
+				m_animator = GetComponentInChildren<Animator> ();
+				m_animator.SetBool (playerAnimJump, false);
+				m_animator.SetFloat (playerAnimMove, 0.0f);
+			}
 		}
 		
 		// Update is called once per frame
@@ -76,13 +81,19 @@ namespace grannyscape
 
 			if (m_bGrounded)
 			{
-				m_animator.SetBool(playerAnimJump, false);
+				if (useAnimations) 
+				{
+					m_animator.SetBool(playerAnimJump, false);
+				}
 			}
 
 			
 			if(Input.GetButtonDown ("Jump") && m_bGrounded && (m_gameStateController.GameState == State.LEVELRUNNING) )
 			{
-				m_animator.SetBool(playerAnimJump, true);
+				if (useAnimations) 
+				{	
+					m_animator.SetBool(playerAnimJump, true);
+				}
 				m_bJump = true;
 			}
 		}
@@ -125,9 +136,10 @@ namespace grannyscape
 				rigidbody2D.AddForce (Vector2.up * 10);
 			}
 
-			m_animator.SetFloat(playerAnimMove, rigidbody2D.velocity.x);
-
-
+			if (useAnimations) 
+			{
+				m_animator.SetFloat (playerAnimMove, rigidbody2D.velocity.x);
+			}
 		}
 
 		void OnDrawGizmos() 
