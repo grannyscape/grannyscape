@@ -39,7 +39,7 @@ namespace grannyscape
 
 		public void SetMoney(int money)
 		{
-			//m_moneyTexttext = "Money: " + money;
+			m_moneyText.GetComponent<Text>().text = money.ToString("0000");
 		}
 
 		public void SetDead(bool dead)

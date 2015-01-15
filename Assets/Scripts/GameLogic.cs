@@ -65,7 +65,6 @@ namespace grannyscape
 			if (m_bFastSpeed && m_elapsedTime >= speedChangeTime) 
 			{
 				StopFastSpeed();
-
 			}
 
 			if (m_bSlowSpeed && m_elapsedTime >= speedChangeTime) 

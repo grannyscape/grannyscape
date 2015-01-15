@@ -62,6 +62,7 @@ namespace grannyscape
 		{
 			if (m_gameStateController.GameState != State.LEVELRUNNING) 
 			{
+				m_animator.SetFloat(playerAnimMove, 0.0f);
 				return;
 			}
 
@@ -148,9 +149,11 @@ namespace grannyscape
 
 			if(m_bJump)
 			{
-				Debug.Log ("jump velocity add!");
+				//TODO: testaa
+				float jumpRatio = rigidbody2D.velocity.x / moveSpeed;
+				Mathf.Clamp(jumpRatio, 0.5f, 1f);
 
-				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y));
+				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y)) * jumpRatio;
 				Vector2 currentVelocity = rigidbody2D.velocity;
 				currentVelocity.y = jumpForce;
 				rigidbody2D.velocity = currentVelocity;
