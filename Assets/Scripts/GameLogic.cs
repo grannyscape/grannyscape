@@ -9,12 +9,22 @@ namespace grannyscape
 	{
 		public float reduceHealthPerSecond = 0.005f;
 		public float coffeecupHealthBonus = 0.3f;
+		public float speedIncrease = 2f;
+		public float speedIncreaseTime = 2f;
+
+	
 
 		private float m_health = 1f;
 		private int m_money = 0;
 
-		private bool m_bDead = false;
 
+		//private bool m_bDead = false;
+		private bool m_bFastSpeed = false;
+
+		private float m_fastSpeedStartTime = 0f;
+		private int m_fastSpeedUpgrades = 0;
+
+		private PlayerController m_playerController;
 		private GUIController m_guiController;
 		private GameStateController m_gameStateController;
 
@@ -27,8 +37,9 @@ namespace grannyscape
 		// Use this for initialization
 		void Start () 
 		{
-			m_guiController = GetComponent<GUIController>();
-			m_gameStateController = GetComponent<GameStateController>();
+			m_guiController = GetComponent<GUIController> ();
+			m_gameStateController = GetComponent<GameStateController> ();
+			m_playerController = GameObject.FindWithTag ("Player").GetComponent<PlayerController>();
 		}
 
 		void Reset()
@@ -43,6 +54,21 @@ namespace grannyscape
 			if(m_health <= 0 && m_gameStateController.GameState == State.LEVELRUNNING)
 			{
 				SetDead();
+			}
+
+			if (m_bFastSpeed) 
+			{
+				if(Time.time - m_fastSpeedStartTime >= speedIncreaseTime)
+				{
+					for(int i=0; i<m_fastSpeedUpgrades; i++)
+					{
+						m_playerController.ChangeMaxSpeed(-speedIncrease);
+					}
+					m_fastSpeedUpgrades = 0;
+					m_bFastSpeed = false;
+
+					Debug.Log ("Fast pill ended");
+				}
 			}
 		}
 
@@ -72,6 +98,10 @@ namespace grannyscape
 				m_guiController.SetHealth(m_health);
 				break;
 			case PowerUp.Type.SPEEDPILL:
+				m_playerController.ChangeMaxSpeed(speedIncrease);
+				m_bFastSpeed = true;
+				m_fastSpeedStartTime = Time.time;
+				m_fastSpeedUpgrades++;
 				break;
 			case PowerUp.Type.SLOWPILL:
 				break;
@@ -82,7 +112,7 @@ namespace grannyscape
 
 		public void SetDead()
 		{
-			m_bDead = true;
+			//m_bDead = true;
 			m_gameStateController.GameState = State.DEAD;
 			m_guiController.SetDead (true);
 		}

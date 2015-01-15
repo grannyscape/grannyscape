@@ -6,10 +6,10 @@ namespace grannyscape
 
 	public class PlayerController : MonoBehaviour 
 	{
-		public float moveSpeed = 4f;
+		public float moveSpeed = 8f;
 		public float minSpeed = 2f;
-		public float maxSpeed = 8f;
-		public float jumpHeight = 2;
+		public float jumpHeight = 2f;
+		public float deathLevel = -1;
 	
 		private bool m_bJump = false;
 		private bool m_bGrounded = false;
@@ -29,9 +29,7 @@ namespace grannyscape
 		private int playerAnimMove = Animator.StringToHash("playerAnimMove");
 
 		public bool useAnimations = false;
-
-		public float deathLevel = -1;
-
+		
 		void Awake()
 		{
 			m_groundCheck = transform.Find("groundCheck");
@@ -44,6 +42,7 @@ namespace grannyscape
 			GameObject sceneEssentials = GameObject.Find("SceneEssentials");
 			m_gameStateController = sceneEssentials.GetComponent<GameStateController>();
 			m_gameLogic = sceneEssentials.GetComponent<GameLogic>();
+
 
 			if (useAnimations) 
 			{
@@ -119,14 +118,14 @@ namespace grannyscape
 				if(rigidbody2D.velocity.magnitude > moveSpeed)
 				{
 					Vector2 currentVelocity = rigidbody2D.velocity;
-					currentVelocity = rigidbody2D.velocity.normalized * maxSpeed;
+					currentVelocity = rigidbody2D.velocity.normalized * moveSpeed;
 					rigidbody2D.velocity = currentVelocity;
 				}
 			} 
 
 			if(m_bJump)
 			{
-				float jumpRatio = rigidbody2D.velocity.magnitude / maxSpeed;
+				float jumpRatio = rigidbody2D.velocity.magnitude / moveSpeed;
 				Mathf.Clamp(jumpRatio, 0.5f, 1f);
 
 				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y)) * jumpRatio;
@@ -138,9 +137,10 @@ namespace grannyscape
 
 			}
 
-			if(rigidbody2D.velocity.x < 0.001f && !m_bFrontCollision && !m_bGrounded)
+			if(rigidbody2D.velocity.x < 0.001f && !m_bGrounded)
 			{
-				rigidbody2D.AddForce (Vector2.up * 10);
+				Debug.Log ("adding up force");
+				rigidbody2D.AddForce (Vector2.up * 10f, ForceMode2D.Force);
 			}
 
 			if (useAnimations) 
@@ -161,5 +161,9 @@ namespace grannyscape
 			}
 		}
 
+		public void ChangeMaxSpeed(float speedChange)
+		{
+			moveSpeed = moveSpeed + speedChange;
+		}
 	}
 }

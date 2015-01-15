@@ -29,7 +29,6 @@ namespace grannyscape
 			switch(coll.tag)
 			{
 			case "Powerup":
-				Debug.Log ("hit powerup");
 				PowerUp p = coll.gameObject.GetComponent<PowerUp>();
 				m_gameLogic.PowerUpCollected(p.PowerUpType);
 				coll.gameObject.GetComponent<PowerUp>().Hit();
