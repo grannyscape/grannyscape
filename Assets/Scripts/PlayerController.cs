@@ -32,7 +32,8 @@ namespace grannyscape
 
 		public bool useAnimations = false;
 
-		public GameObject FartPrefab;
+		public GameObject fartPrefab;
+		public AudioClip[] farts;
 
 		void Awake()
 		{
@@ -112,6 +113,12 @@ namespace grannyscape
 				}
 				else if(m_gameLogic.Peasoup > 0)
 				{
+					if (farts.Length > 0) 
+					{
+						AudioSource.PlayClipAtPoint(farts [Random.Range (0, farts.Length - 1)], Camera.main.transform.position);
+					}
+					Instantiate (fartPrefab, transform.position, Quaternion.identity);
+
 					Debug.Log("doubleJump!!");
 					m_gameLogic.RemovePeasoup();
 					m_bJump = true;
