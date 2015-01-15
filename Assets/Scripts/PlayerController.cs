@@ -29,8 +29,11 @@ namespace grannyscape
 		private int playerAnimJump =  Animator.StringToHash("playerAnimJump");
 		private int playerAnimMove = Animator.StringToHash("playerAnimMove");
 		private int playerAnimAttack = Animator.StringToHash("playerAnimAttack");
+
 		public bool useAnimations = false;
-		
+
+		public GameObject FartPrefab;
+
 		void Awake()
 		{
 			m_groundCheck = transform.Find("groundCheck");
@@ -66,29 +69,20 @@ namespace grannyscape
 				m_gameLogic.SetDead();
 			}
 
-			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
-			//m_bGrounded = Physics2D.Linecast(transform.position, m_groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
-
+			// Check ground collision
 			m_bGrounded = false;
 			RaycastHit2D groundHit = Physics2D.CircleCast(transform.position, 0.5f, -Vector2.up, 0.6f, LayerMask.GetMask ("Ground"));
 			if (groundHit) 
 			{
-				//Debug.Log("groundhit: " + groundHit.collider.name);
 				m_bGrounded = true;
 				m_animator.SetBool (playerAnimJump, false);
 			}
-		
 
 			// Check front collision
-			//m_frontCheckStart.x = transform.position.x;
-			//m_frontCheckStart.y = m_frontCheck.position.y;
-			//m_bFrontCollision = Physics2D.Linecast(m_frontCheckStart, m_frontCheck.position, 1 << LayerMask.NameToLayer("Ground"));
-
 			m_bFrontCollision = false;
 			RaycastHit2D wallHit = Physics2D.CircleCast(transform.position, 0.8f, Vector2.right, 0.2f, LayerMask.GetMask("Ground"));
 			if(wallHit)
 			{
-				//Debug.Log("wallhit: " + wallHit.collider.name);
 				m_bFrontCollision = true;
 			}
 
