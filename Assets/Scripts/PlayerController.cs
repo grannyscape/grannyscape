@@ -113,7 +113,6 @@ namespace grannyscape
 
 			if (!m_bFrontCollision)
 			{
-				Debug.Log ("adding x force!");
 				rigidbody2D.AddForce(Vector2.right * moveSpeed * 2);
 
 				if(rigidbody2D.velocity.magnitude > moveSpeed)
@@ -138,7 +137,7 @@ namespace grannyscape
 			if(rigidbody2D.velocity.x < 0.001f && !m_bGrounded)
 			{
 				Debug.Log ("adding up force");
-				rigidbody2D.AddForce (Vector2.up * 100f, ForceMode2D.Force);
+				rigidbody2D.AddForce (Vector2.up * 10f, ForceMode2D.Force);
 			}
 
 			if (useAnimations) 
