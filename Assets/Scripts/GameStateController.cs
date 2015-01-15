@@ -10,19 +10,22 @@ namespace grannyscape
 		LEVELRUNNING,
 		LEVELEND,
 		DEAD,
-		ENDMENU,
+		MAP,
 	}
 
 	public class GameStateController : MonoBehaviour 
 	{
 		private State m_gameState = State.LEVELSTART;
+		
 		private GameLogic m_gameLogic;
+		private MusicManager m_musicManager;
 
 		private bool m_bStateChanged = true;
 
 		void Start () 
 		{
 			m_gameLogic = GetComponent<GameLogic>();
+			m_musicManager = GetComponent<MusicManager>();
 		}
 
 		void Update () 
@@ -30,6 +33,7 @@ namespace grannyscape
 			switch (m_gameState) 
 			{
 			case State.MAINMENU:
+
 				break;
 			case State.LEVELSTART:
 				if (Input.anyKeyDown)
@@ -43,7 +47,7 @@ namespace grannyscape
 				break;
 			case State.DEAD:
 				break;
-			case State.ENDMENU:
+			case State.MAP:
 				break;
 			}
 
@@ -68,3 +72,4 @@ namespace grannyscape
 	}
 
 }
+

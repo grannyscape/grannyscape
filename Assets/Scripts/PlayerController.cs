@@ -24,11 +24,13 @@ namespace grannyscape
 
 		private GameStateController m_gameStateController;
 		private GameLogic m_gameLogic;
+		private PersistentData m_persistentData;
 
 		// hash the animation state string to save performance
 		private int playerAnimJump =  Animator.StringToHash("playerAnimJump");
 		private int playerAnimMove = Animator.StringToHash("playerAnimMove");
 		private int playerAnimAttack = Animator.StringToHash("playerAnimAttack");
+		private int playerAnimWin = Animator.StringToHash("playerAnimWin");
 
 		public bool useAnimations = false;
 
@@ -47,7 +49,7 @@ namespace grannyscape
 			GameObject sceneEssentials = GameObject.Find("SceneEssentials");
 			m_gameStateController = sceneEssentials.GetComponent<GameStateController>();
 			m_gameLogic = sceneEssentials.GetComponent<GameLogic>();
-
+			m_persistentData = GameObject.Find ("PersistentData").GetComponent<PersistentData>();
 
 			if (useAnimations) 
 			{
@@ -60,9 +62,13 @@ namespace grannyscape
 		// Update is called once per frame
 		void Update () 
 		{
+			if (m_gameStateController.GameState == State.LEVELEND) 
+			{
+				m_animator.SetBool(playerAnimWin, true);
+			}
+
 			if (m_gameStateController.GameState != State.LEVELRUNNING) 
 			{
-				m_animator.SetFloat(playerAnimMove, 0.0f);
 				return;
 			}
 
@@ -95,15 +101,15 @@ namespace grannyscape
 					m_animator.SetBool(playerAnimJump, false);
 				}
 			}
+
 			m_animator.SetBool(playerAnimAttack, false);
-			if (Input.GetKeyDown (KeyCode .A)) 
+			if (Input.GetKeyDown (KeyCode.A)) 
 			{
 				m_animator.SetBool(playerAnimAttack, true);
 			}
 
 			if(Input.GetButtonDown ("Jump") && (m_gameStateController.GameState == State.LEVELRUNNING) )
 			{
-				Debug.Log("jump!!");
 				if (useAnimations) 
 				{	
 					m_animator.SetBool(playerAnimJump, true);
@@ -112,7 +118,7 @@ namespace grannyscape
 				{
 					m_bJump = true;
 				}
-				else if(m_gameLogic.Peasoup > 0)
+				else if(m_persistentData.Peasoup > 0)
 				{
 					if (farts.Length > 0) 
 					{
@@ -150,10 +156,10 @@ namespace grannyscape
 			if(m_bJump)
 			{
 				//TODO: testaa
-				float jumpRatio = rigidbody2D.velocity.x / moveSpeed;
-				Mathf.Clamp(jumpRatio, 0.5f, 1f);
+				//float jumpRatio = rigidbody2D.velocity.x / moveSpeed;
+				//Mathf.Clamp(jumpRatio, 0.5f, 1f);
 
-				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y)) * jumpRatio;
+				float jumpForce = Mathf.Sqrt (2.0f * jumpHeight * Mathf.Abs(Physics2D.gravity.y)); // * jumpRatio;
 				Vector2 currentVelocity = rigidbody2D.velocity;
 				currentVelocity.y = jumpForce;
 				rigidbody2D.velocity = currentVelocity;
@@ -206,6 +212,11 @@ namespace grannyscape
 		public void ChangeMaxSpeed(float speedChange)
 		{
 			moveSpeed = moveSpeed + speedChange;
+		}
+
+		public void StopMovement()
+		{
+			rigidbody2D.velocity = Vector2.zero;
 		}
 	}
 }

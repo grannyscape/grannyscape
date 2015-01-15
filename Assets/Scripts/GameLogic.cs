@@ -11,12 +11,8 @@ namespace grannyscape
 		public float coffeecupHealthBonus = 0.3f;
 		public float speedChange = 2f;
 		public float speedChangeTime = 2f;
+		public float maxPeasoupAmount = 4f;
 
-		private float m_health = 1f;
-		private int m_money = 0;
-		private int m_peasoup = 0;
-
-		//private bool m_bDead = false;
 		private bool m_bFastSpeed = false;
 		private bool m_bSlowSpeed = false;
 
@@ -26,42 +22,36 @@ namespace grannyscape
 		private PlayerController m_playerController;
 		private GUIController m_guiController;
 		private GameStateController m_gameStateController;
+		private MusicManager m_musicManager;
+
+		private PersistentData m_persistentData;
 
 
-		void Awake()
-		{
-			DontDestroyOnLoad(gameObject);
-		}
-
+	
 		// Use this for initialization
 		void Start () 
 		{
 			m_guiController = GetComponent<GUIController> ();
 			m_gameStateController = GetComponent<GameStateController> ();
 			m_playerController = GameObject.FindWithTag ("Player").GetComponent<PlayerController>();
+			m_musicManager = GetComponent<MusicManager>();
+
+			m_persistentData = GameObject.Find ("PersistentData").GetComponent<PersistentData>();
+			m_persistentData.Coffee = 1f;
 		}
 
-		void Reset()
-		{
-			m_guiController.SetDead(false);
-			m_guiController.LevelFinished(false);
-		}
-
-		public int Peasoup
-		{
-			get { return m_peasoup; }
-		}
-		
 		// Update is called once per frame
 		void Update () 
 		{
 			m_elapsedTime = m_elapsedTime + Time.deltaTime;
 
-			if(m_health <= 0 && m_gameStateController.GameState == State.LEVELRUNNING)
+			// die if coffee runs out
+			if(m_persistentData.Coffee <= 0 && m_gameStateController.GameState == State.LEVELRUNNING)
 			{
 				SetDead();
 			}
 
+			// stop stimulants if effects vanish
 			if (m_bFastSpeed && m_elapsedTime >= speedChangeTime) 
 			{
 				StopFastSpeed();
@@ -75,13 +65,31 @@ namespace grannyscape
 
 		public void StateChanged()
 		{
-			if(m_gameStateController.GameState == State.LEVELRUNNING)
+			Music music = Music.NONE;
+
+			switch(m_gameStateController.GameState)
 			{
+			case State.LEVELSTART:
+				music = Music.GAME;
+				break;
+			case State.LEVELRUNNING:
 				InvokeRepeating("ReduceHealth", 0.0f, 1f);
-			}
-			else
-			{
+				break;
+			case State.DEAD:
 				CancelInvoke ("ReduceHealth");
+				break;
+			case State.LEVELEND:
+				music = Music.WIN;
+				CancelInvoke ("ReduceHealth");
+				break;
+			case State.MAP:
+				music = Music.MENU;
+				break;
+			}
+
+			if(music != Music.NONE)
+			{
+				m_musicManager.PlayMusic(music);
 			}
 		}
 
@@ -90,13 +98,13 @@ namespace grannyscape
 			switch(type)
 			{
 			case PowerUp.Type.COIN:
-				m_money++;
-				m_guiController.SetMoney(m_money);
+				m_persistentData.Money++; 
+				m_guiController.SetMoney(m_persistentData.Money);
 				break;
 			case PowerUp.Type.COFFEECUP:
-				m_health = m_health + coffeecupHealthBonus;
-				Mathf.Clamp(m_health, 0f, 1f);
-				m_guiController.SetHealth(m_health);
+				m_persistentData.Coffee = m_persistentData.Coffee  + coffeecupHealthBonus;
+				Mathf.Clamp(m_persistentData.Coffee, 0f, 1f);
+				m_guiController.SetHealth(m_persistentData.Coffee );
 				break;
 			case PowerUp.Type.SPEEDPILL:
 				m_playerController.ChangeMaxSpeed(speedChange);
@@ -105,6 +113,7 @@ namespace grannyscape
 				m_elapsedTime = 0f;
 				break;
 			case PowerUp.Type.SLOWPILL:
+				m_musicManager.SetPitch(0.5f);
 				StopFastSpeed();
 				m_bSlowSpeed = true;
 				Time.timeScale = 0.5f;
@@ -118,21 +127,21 @@ namespace grannyscape
 
 		public void SetDead()
 		{
-			//m_bDead = true;
 			m_gameStateController.GameState = State.DEAD;
 			m_guiController.SetDead (true);
 		}
 
 		public void LevelFinished()
 		{
+			m_playerController.StopMovement();
 			m_gameStateController.GameState = State.LEVELEND;
 			m_guiController.LevelFinished(true);
 		}
 	
 		void ReduceHealth()
 		{
-			m_health = m_health - reduceHealthPerSecond;
-			m_guiController.SetHealth(m_health);
+			m_persistentData.Coffee = m_persistentData.Coffee - reduceHealthPerSecond;
+			m_guiController.SetHealth(m_persistentData.Coffee);
 		}
 
 		void StopFastSpeed()
@@ -149,27 +158,28 @@ namespace grannyscape
 
 		void StopSlowSpeed()
 		{
+			m_musicManager.SetPitch(1f);
 			Time.timeScale = 1f;
 			m_bSlowSpeed = false;
 		}
 
 		void AddPeasoup()
 		{
-			if (m_peasoup < 5) 
+			if (m_persistentData.Peasoup < maxPeasoupAmount) 
 			{
-				m_peasoup = m_peasoup + 1;
+				m_persistentData.Peasoup = m_persistentData.Peasoup + 1;
 			}
 
-			m_guiController.SetPeasoup((float)m_peasoup/4);
+			m_guiController.SetPeasoup((float)m_persistentData.Peasoup / maxPeasoupAmount);
 		}
 
 		public void RemovePeasoup()
 		{
-			if (m_peasoup > 0) 
+			if (m_persistentData.Peasoup  > 0) 
 			{
-				m_peasoup = m_peasoup - 1;
+				m_persistentData.Peasoup  = m_persistentData.Peasoup  - 1;
 			}
-			m_guiController.SetPeasoup ((float)m_peasoup / 4);
+			m_guiController.SetPeasoup ((float)m_persistentData.Peasoup  / maxPeasoupAmount);
 		}
 	}
 
