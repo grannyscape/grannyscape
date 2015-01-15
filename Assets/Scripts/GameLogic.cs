@@ -7,7 +7,6 @@ namespace grannyscape
 
 	public class GameLogic : MonoBehaviour 
 	{
-
 		public float reduceHealthPerSecond = 0.005f;
 		public float coffeecupHealthBonus = 0.3f;
 
