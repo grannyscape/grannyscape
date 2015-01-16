@@ -25,8 +25,6 @@ namespace grannyscape
 		void Start () 
 		{
 			m_gameLogic = GetComponent<GameLogic>();
-
-			//m_persistentData = GameObject.Find("PersistentData").GetComponent<PersistentData>();
 			m_persistentData = PersistentData.instance;
 		}
 
@@ -35,6 +33,10 @@ namespace grannyscape
 			if(Input.GetKeyDown(KeyCode.Escape))
 			{
 				Application.LoadLevel(0);
+			}
+			if(Input.GetKeyDown(KeyCode.R))
+			{
+				Application.LoadLevel(m_persistentData.CurrentLevel);
 			}
 
 			switch (m_gameState) 

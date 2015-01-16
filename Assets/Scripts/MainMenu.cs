@@ -14,7 +14,11 @@ namespace grannyscape
 		public GameObject loader2;
 		public GameObject loader3;
 
+		public GameObject map;
+
 		public AudioClip fart;
+
+		private bool m_bMap = false;
 		
 		void Start()
 		{
@@ -23,8 +27,20 @@ namespace grannyscape
 
 			menu.SetActive(false);
 			credits.SetActive(false);
+			map.SetActive(false);
 
 			StartCoroutine ("Loader");
+		}
+
+		void Update()
+		{
+			if (m_bMap) 
+			{
+				if (Input.anyKeyDown)
+				{
+					Application.LoadLevel(1);
+				}
+			}
 		}
 
 		IEnumerator Loader()
@@ -47,8 +63,11 @@ namespace grannyscape
 
 		IEnumerator StartFart()
 		{
+			m_bMap = true;
 			AudioSource.PlayClipAtPoint (fart, Camera.main.transform.position);
-			yield return new WaitForSeconds (0.5f);
+			menu.SetActive (false);
+			map.SetActive (true);
+			yield return new WaitForSeconds (2f);
 			Application.LoadLevel(1);
 		}
 
