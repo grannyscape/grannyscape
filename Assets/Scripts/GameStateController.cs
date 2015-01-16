@@ -67,8 +67,12 @@ namespace grannyscape
 			case State.MAP:
 				if(Input.anyKeyDown)
 				{
-					m_persistentData.CurrentLevel++;
-					Application.LoadLevel(m_persistentData.CurrentLevel);
+					if(m_persistentData.CurrentLevel < 5)
+					{
+						m_persistentData.CurrentLevel++;
+						Application.LoadLevel(m_persistentData.CurrentLevel);
+					}
+					Application.LoadLevel(0);
 				}
 				break;
 			}
