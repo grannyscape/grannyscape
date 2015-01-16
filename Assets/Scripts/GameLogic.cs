@@ -24,6 +24,7 @@ namespace grannyscape
 		private GameStateController m_gameStateController;
 		private MusicManager m_musicManager;
 		private AudioManager m_audioManager;
+		private GameObject m_gui;
 
 		private PersistentData m_persistentData;
 
@@ -37,6 +38,7 @@ namespace grannyscape
 			m_playerController = GameObject.FindWithTag ("Player").GetComponent<PlayerController>();
 			m_musicManager = GetComponent<MusicManager>();
 			m_audioManager = GetComponent<AudioManager>();
+			m_gui = GameObject.Find("GUI");
 
 			m_ambulance = GameObject.Find("ambulance");
 
@@ -96,6 +98,7 @@ namespace grannyscape
 				CancelInvoke ("ReduceHealth");
 				break;
 			case State.MAP:
+				m_gui.SetActive(false);
 				m_guiController.ShowMap(m_persistentData.CurrentLevel, true);
 				music = Music.MENU;
 				break;
