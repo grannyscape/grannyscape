@@ -126,11 +126,6 @@ namespace grannyscape
 					m_bJump = true;
 				}
 			}
-
-			if (m_bFrontCollision && !m_bGrounded && !groundHit && rigidbody2D.velocity.x < 0.01f && rigidbody2D.velocity.x > -0.01f) 
-			{
-				m_bGrounded = true;
-			}
 		}
 
 		void FixedUpdate () 
@@ -152,6 +147,13 @@ namespace grannyscape
 					rigidbody2D.velocity = currentVelocity;
 				}
 			} 	
+
+			//debug hack
+			if(Input.GetKeyDown (KeyCode.P))
+			{
+				m_bGrounded = true;
+				m_bJump = true;
+			}
 
 			if(m_bJump)
 			{
@@ -183,6 +185,8 @@ namespace grannyscape
 				v0.x = 0.0f;
 				rigidbody2D.velocity = v0;
 			}
+
+
 		}
 
 		void OnDrawGizmos() 
