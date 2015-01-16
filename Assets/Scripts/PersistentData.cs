@@ -13,10 +13,13 @@ namespace grannyscape
 		private int m_peasoup = 0;
 		private int m_currentLevel = 1; //TODO: change when we have main menu
 
+		public int currentLevelDebug;
+
 		void Awake() 
 		{
 			if(instance == null) 
 			{
+				m_currentLevel = currentLevelDebug;
 				instance = this;
 				DontDestroyOnLoad(gameObject);
 			}

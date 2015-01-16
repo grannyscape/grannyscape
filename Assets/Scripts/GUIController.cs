@@ -105,7 +105,11 @@ namespace grannyscape
 
 		public void ShowMap(int level, bool visible)
 		{
+			Debug.Log ("showing map");
 			m_maps[level].SetActive(visible);
+			Vector3 pos = Camera.main.transform.position;
+			pos.z = 0f;
+			m_maps[level].transform.position = pos;
 		}
 	}
 
