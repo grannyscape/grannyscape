@@ -72,7 +72,7 @@ namespace grannyscape
 
 			// Check ground collision
 			m_bGrounded = false;
-			RaycastHit2D groundHit = Physics2D.CircleCast(transform.position, 0.5f, -Vector2.up, 0.6f, LayerMask.GetMask ("Ground"));
+			RaycastHit2D groundHit = Physics2D.CircleCast(transform.position, 0.8f, -Vector2.up, 0.6f, LayerMask.GetMask ("Ground"));
 			if (groundHit) 
 			{
 				m_bGrounded = true;
@@ -93,11 +93,10 @@ namespace grannyscape
 			}
 			Debug.DrawRay (transform.position, Vector2.right * hitDistance, Color.red);
 
-
 			AnimatorStateInfo info = m_animator.GetCurrentAnimatorStateInfo(0);
 			bool isAttacking = info.IsName ("attackShort");
 			m_animator.SetBool(playerAnimAttack, false);
-			if (!isAttacking && Input.GetKeyDown (KeyCode.A)) 
+			if (!isAttacking && (Input.GetKeyDown (KeyCode.A) || Input.GetMouseButton(1))) 
 			{
 				m_audioManager.PlaySound(SoundType.GRANNY_STICK_SWING);
 				m_animator.SetBool(playerAnimAttack, true);
@@ -111,7 +110,7 @@ namespace grannyscape
 				}*/
 			}
 
-			if(Input.GetButtonDown ("Jump") && (m_gameStateController.GameState == State.LEVELRUNNING) )
+			if((Input.GetButtonDown ("Jump") || Input.GetMouseButton(0)) && (m_gameStateController.GameState == State.LEVELRUNNING) )
 			{
 				m_animator.SetBool(playerAnimJump, true);
 

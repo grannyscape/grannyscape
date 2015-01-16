@@ -65,6 +65,7 @@ namespace grannyscape
 				}
 				break;
 			case State.MAP:
+				//Debug.Log ("currentLevel: " + m_persistentData.CurrentLevel);
 				if(Input.anyKeyDown)
 				{
 					if(m_persistentData.CurrentLevel < 5)
@@ -72,7 +73,10 @@ namespace grannyscape
 						m_persistentData.CurrentLevel++;
 						Application.LoadLevel(m_persistentData.CurrentLevel);
 					}
-					Application.LoadLevel(0);
+					else
+					{
+						Application.LoadLevel(0);
+					}
 				}
 				break;
 			}
