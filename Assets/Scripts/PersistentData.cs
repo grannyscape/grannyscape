@@ -6,14 +6,24 @@ namespace grannyscape
 
 	public class PersistentData : MonoBehaviour 
 	{
+		public static PersistentData instance;
+
 		private float m_health = 1f;	// coffee
 		private int m_money = 0;
 		private int m_peasoup = 0;
-		private int m_currentLevel = 1;
+		private int m_currentLevel = 1; //TODO: change when we have main menu
 
 		void Awake() 
 		{
-			DontDestroyOnLoad(gameObject);
+			if(instance == null) 
+			{
+				instance = this;
+				DontDestroyOnLoad(gameObject);
+			}
+			else
+			{
+				Destroy(this); // or gameObject
+			}
 		}
 		
 		public float Coffee

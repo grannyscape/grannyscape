@@ -13,8 +13,6 @@ namespace grannyscape
 		
 		}
 
-
-
 		void OnTriggerEnter2D(Collider2D coll)
 		{
 			switch(coll.tag)
@@ -25,7 +23,6 @@ namespace grannyscape
 				coll.gameObject.GetComponent<PowerUp>().Hit();
 				break;
 			case "Finish":
-				Debug.Log ("level end");
 				m_gameLogic.LevelFinished();
 				break;
 			default:

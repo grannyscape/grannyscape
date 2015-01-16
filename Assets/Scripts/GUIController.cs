@@ -4,6 +4,11 @@ using UnityEngine.UI;
 
 namespace grannyscape
 {
+	public enum DeathReason
+	{
+		OUT_OF_COFFEE,
+		KICKET_THE_BUCKET
+	}
 
 	public class GUIController : MonoBehaviour 
 	{	
@@ -11,12 +16,14 @@ namespace grannyscape
 		private GameObject m_peasoupSlider;
 		private GameObject m_moneyText;
 
-		private GameObject m_gameOverText; 
-		private GameObject m_levelFinishedText;
+		private GameObject m_gameOverText;
+		private GameObject m_pressAnyKey;
 
 		private GameObject[] m_startTexts = new GameObject[5];
 		private GameObject[] m_endTexts = new GameObject[5];
 
+		private GameObject[] m_maps = new GameObject[6];
+		
 		void Start()
 		{
 			m_healthBarSlider = GameObject.Find ("HealthSlider");
@@ -25,10 +32,10 @@ namespace grannyscape
 			m_peasoupSlider = GameObject.Find ("PeasoupSlider");
 
 			m_gameOverText = GameObject.Find ("GameOver");
-			//m_levelFinishedText = GameObject.Find ("LevelComplete");
+			m_pressAnyKey = GameObject.Find ("PressAnyKey");
 
 			m_gameOverText.SetActive (false);
-			//m_levelFinishedText.SetActive (false);
+			m_pressAnyKey.SetActive (false);
 
 			for(int i=1; i < 6; i++)
 			{
@@ -39,6 +46,12 @@ namespace grannyscape
 				string s2 = "level"+i+"_end";
 				m_endTexts[i-1] = GameObject.Find(s2);
 				m_endTexts[i-1].SetActive(false);
+			}
+
+			for(int i=0; i<6; i++)
+			{
+				m_maps[i] = GameObject.Find ("map_0"+i);
+				m_maps[i].SetActive(false);
 			}
 		}
 
@@ -52,9 +65,22 @@ namespace grannyscape
 			m_moneyText.GetComponent<Text>().text = money.ToString("0000");
 		}
 
-		public void SetDead(bool dead)
+		public void SetDead(bool dead, DeathReason reason)
 		{
+			if(dead)
+			{
+				if(reason == DeathReason.OUT_OF_COFFEE)
+					m_gameOverText.GetComponent<Text>().text = "Run out of coffee!";
+				else
+					m_gameOverText.GetComponent<Text>().text = "Granny kicket the bucket!";
+			}
+
 			m_gameOverText.SetActive(dead);
+		}
+
+		public void ShowPressAnyKey(bool visible)
+		{
+			m_pressAnyKey.SetActive(visible);
 		}
 
 		public void LevelFinished(bool finished)
@@ -75,6 +101,11 @@ namespace grannyscape
 		public void ShowEndText(int level, bool visible)
 		{
 			m_endTexts[level-1].SetActive(visible);
+		}
+
+		public void ShowMap(int level, bool visible)
+		{
+			m_maps[level].SetActive(visible);
 		}
 	}
 

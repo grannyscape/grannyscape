@@ -12,19 +12,19 @@ namespace grannyscape
 		public float deathLevel = -1;
 	
 		private bool m_bJump = false;
-		private bool m_bDoubleJump = false;
 		private bool m_bGrounded = false;
 		private bool m_bFrontCollision = false;
 
-		private Transform m_groundCheck;
-		private Transform m_frontCheck;
-		private Vector2 m_frontCheckStart = new Vector2(0f, 0f);
+		//private Transform m_groundCheck;
+		//private Transform m_frontCheck;
+		//private Vector2 m_frontCheckStart = new Vector2(0f, 0f);
 
 		private Animator m_animator;
 
 		private GameStateController m_gameStateController;
 		private GameLogic m_gameLogic;
 		private PersistentData m_persistentData;
+		private AudioManager m_audioManager;
 
 		// hash the animation state string to save performance
 		private int playerAnimJump =  Animator.StringToHash("playerAnimJump");
@@ -39,8 +39,8 @@ namespace grannyscape
 
 		void Awake()
 		{
-			m_groundCheck = transform.Find("groundCheck");
-			m_frontCheck = transform.Find("frontCheck");
+			//m_groundCheck = transform.Find("groundCheck");
+			//m_frontCheck = transform.Find("frontCheck");
 		}
 
 		// Use this for initialization
@@ -49,6 +49,8 @@ namespace grannyscape
 			GameObject sceneEssentials = GameObject.Find("SceneEssentials");
 			m_gameStateController = sceneEssentials.GetComponent<GameStateController>();
 			m_gameLogic = sceneEssentials.GetComponent<GameLogic>();
+			m_audioManager = sceneEssentials.GetComponent<AudioManager>();
+
 			m_persistentData = GameObject.Find ("PersistentData").GetComponent<PersistentData>();
 
 			if (useAnimations) 
@@ -74,7 +76,7 @@ namespace grannyscape
 
 			if (transform.position.y < deathLevel) 
 			{
-				m_gameLogic.SetDead();
+				m_gameLogic.SetDead(DeathReason.KICKET_THE_BUCKET);
 			}
 
 			// Check ground collision
@@ -120,13 +122,8 @@ namespace grannyscape
 				}
 				else if(m_persistentData.Peasoup > 0)
 				{
-					if (farts.Length > 0) 
-					{
-						AudioSource.PlayClipAtPoint(farts [Random.Range (0, farts.Length - 1)], Camera.main.transform.position);
-					}
+					m_audioManager.PlaySound(SoundType.GRANNY_FART);
 					Instantiate (fartPrefab, transform.position, Quaternion.identity);
-
-					Debug.Log("doubleJump!!");
 					m_gameLogic.RemovePeasoup();
 					m_bJump = true;
 				}

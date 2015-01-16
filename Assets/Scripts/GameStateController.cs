@@ -18,22 +18,29 @@ namespace grannyscape
 		private State m_gameState = State.LEVELSTART;
 		
 		private GameLogic m_gameLogic;
-		private MusicManager m_musicManager;
+		private PersistentData m_persistentData;
 
 		private bool m_bStateChanged = true;
 
 		void Start () 
 		{
 			m_gameLogic = GetComponent<GameLogic>();
-			m_musicManager = GetComponent<MusicManager>();
+
+			//m_persistentData = GameObject.Find("PersistentData").GetComponent<PersistentData>();
+			m_persistentData = PersistentData.instance;
 		}
 
 		void Update () 
 		{
+			if(Input.GetKeyDown(KeyCode.Escape))
+			{
+				Application.LoadLevel(0);
+			}
+
 			switch (m_gameState) 
 			{
 			case State.MAINMENU:
-
+				//main menu is a separate scene?
 				break;
 			case State.LEVELSTART:
 				if (Input.anyKeyDown)
@@ -44,10 +51,23 @@ namespace grannyscape
 			case State.LEVELRUNNING:
 				break;
 			case State.LEVELEND:
+				if(Input.anyKeyDown)
+				{
+					GameState = State.MAP;
+				}
 				break;
 			case State.DEAD:
+				if(Input.anyKeyDown)
+				{
+					Application.LoadLevel(m_persistentData.CurrentLevel);
+				}
 				break;
 			case State.MAP:
+				if(Input.anyKeyDown)
+				{
+					m_persistentData.CurrentLevel++;
+					Application.LoadLevel(m_persistentData.CurrentLevel);
+				}
 				break;
 			}
 

@@ -16,9 +16,16 @@ namespace grannyscape
 		}
 
 		public Type powerUpType = Type.COIN;
+		public SoundType soundType = SoundType.POWERUP_COIN;
 		public GameObject hitEffectPrefab;
 
-	
+		private AudioManager m_audioManager;
+
+		public void Start()
+		{
+			m_audioManager = GameObject.Find ("SceneEssentials").GetComponent<AudioManager>();
+		}
+
 		public PowerUp.Type PowerUpType
 		{
 			get { return powerUpType; }
@@ -26,6 +33,7 @@ namespace grannyscape
 
 		public void Hit()
 		{
+			m_audioManager.PlaySound(soundType);
 			Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
 			Destroy(gameObject);
 		}

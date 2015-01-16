@@ -21,6 +21,7 @@ namespace grannyscape
 		GRANNY_WALKING,
 		GRANNY_WIN,
 		PUNK_HIT,
+		AMBULANCE,
 	}
 
 	public class AudioManager : MonoBehaviour 
@@ -41,6 +42,7 @@ namespace grannyscape
 		public AudioClip[] grannyWalking;
 		public AudioClip[] grannyWin;
 		public AudioClip[] punkHit;
+		public AudioClip[] ambulance;
 
 		private float m_pitch = 1f;
 
@@ -102,6 +104,9 @@ namespace grannyscape
 				break;
 			case SoundType.PUNK_HIT:
 				clips = punkHit;
+				break;
+			case SoundType.AMBULANCE:
+				clips = ambulance;
 				break;
 			}
 
