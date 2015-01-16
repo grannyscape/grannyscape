@@ -15,10 +15,6 @@ namespace grannyscape
 		private bool m_bGrounded = false;
 		private bool m_bFrontCollision = false;
 
-		//private Transform m_groundCheck;
-		//private Transform m_frontCheck;
-		//private Vector2 m_frontCheckStart = new Vector2(0f, 0f);
-
 		private Animator m_animator;
 
 		private GameStateController m_gameStateController;
@@ -32,15 +28,11 @@ namespace grannyscape
 		private int playerAnimAttack = Animator.StringToHash("playerAnimAttack");
 		private int playerAnimWin = Animator.StringToHash("playerAnimWin");
 
-		public bool useAnimations = false;
-
 		public GameObject fartPrefab;
 		public AudioClip[] farts;
 
 		void Awake()
 		{
-			//m_groundCheck = transform.Find("groundCheck");
-			//m_frontCheck = transform.Find("frontCheck");
 		}
 
 		// Use this for initialization
@@ -53,12 +45,9 @@ namespace grannyscape
 
 			m_persistentData = GameObject.Find ("PersistentData").GetComponent<PersistentData>();
 
-			if (useAnimations) 
-			{
-				m_animator = GetComponentInChildren<Animator> ();
-				m_animator.SetBool (playerAnimJump, false);
-				m_animator.SetFloat (playerAnimMove, 0.0f);
-			}
+			m_animator = GetComponentInChildren<Animator> ();
+			m_animator.SetBool (playerAnimJump, false);
+			m_animator.SetFloat (playerAnimMove, 0.0f);
 		}
 		
 		// Update is called once per frame
@@ -98,24 +87,28 @@ namespace grannyscape
 
 			if (m_bGrounded)
 			{
-				if (useAnimations) 
-				{
-					m_animator.SetBool(playerAnimJump, false);
-				}
+				m_animator.SetBool(playerAnimJump, false);
 			}
 
 			m_animator.SetBool(playerAnimAttack, false);
 			if (Input.GetKeyDown (KeyCode.A)) 
 			{
+				m_audioManager.PlaySound(SoundType.GRANNY_STICK_SWING);
 				m_animator.SetBool(playerAnimAttack, true);
+
+				RaycastHit2D enemyHit = Physics2D.CircleCast(transform.position, 0.8f, Vector2.right, 1f, LayerMask.GetMask("Enemy"));
+				if(enemyHit)
+				{
+					//Debug.Log (enemyHit.transform.name);
+					//Debug.Log (enemyHit.transform.tag);
+					enemyHit.transform.gameObject.GetComponent<EnemyController>().Hit();
+				}
 			}
 
 			if(Input.GetButtonDown ("Jump") && (m_gameStateController.GameState == State.LEVELRUNNING) )
 			{
-				if (useAnimations) 
-				{	
-					m_animator.SetBool(playerAnimJump, true);
-				}
+				m_animator.SetBool(playerAnimJump, true);
+
 				if(m_bGrounded)
 				{
 					m_bJump = true;
@@ -171,10 +164,7 @@ namespace grannyscape
 				rigidbody2D.AddForce (Vector2.up * 10f, ForceMode2D.Force);
 			}*/
 
-			if (useAnimations) 
-			{
-				m_animator.SetFloat (playerAnimMove, rigidbody2D.velocity.x);
-			}
+			m_animator.SetFloat (playerAnimMove, rigidbody2D.velocity.x);
 		}
 
 		void OnDrawGizmos() 
@@ -191,6 +181,11 @@ namespace grannyscape
 				Vector3 p = transform.position;
 				p.x = p.x + 0.2f;
 				Gizmos.DrawWireSphere(p, 0.8f);
+
+				Gizmos.color = Color.red;
+				Vector3 z = transform.position;
+				z.x = z.x + 1f;
+				Gizmos.DrawWireSphere(z, 0.8f);
 			}
 		}
 

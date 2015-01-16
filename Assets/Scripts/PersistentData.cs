@@ -13,7 +13,7 @@ namespace grannyscape
 		private int m_peasoup = 0;
 		private int m_currentLevel = 1; //TODO: change when we have main menu
 
-		public int currentLevelDebug;
+		public int currentLevelDebug = 1;
 
 		void Awake() 
 		{
