@@ -126,6 +126,11 @@ namespace grannyscape
 					m_bJump = true;
 				}
 			}
+
+			if (m_bFrontCollision && !m_bGrounded && !groundHit && rigidbody2D.velocity.x < 0.01f && rigidbody2D.velocity.x > -0.01f) 
+			{
+				m_bGrounded = true;
+			}
 		}
 
 		void FixedUpdate () 
