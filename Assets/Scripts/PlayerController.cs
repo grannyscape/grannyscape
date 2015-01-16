@@ -6,6 +6,7 @@ namespace grannyscape
 
 	public class PlayerController : MonoBehaviour 
 	{
+		public float hitDistance = 1;
 		public float moveSpeed = 8f;
 		public float minSpeed = 2f;
 		public float jumpHeight = 2f;
@@ -27,6 +28,7 @@ namespace grannyscape
 		private int playerAnimMove = Animator.StringToHash("playerAnimMove");
 		private int playerAnimAttack = Animator.StringToHash("playerAnimAttack");
 		private int playerAnimWin = Animator.StringToHash("playerAnimWin");
+		private int playerAnimIdle = Animator.StringToHash("playerAnimIdle");
 
 		public GameObject fartPrefab;
 		public AudioClip[] farts;
@@ -89,20 +91,24 @@ namespace grannyscape
 			{
 				m_animator.SetBool(playerAnimJump, false);
 			}
+			Debug.DrawRay (transform.position, Vector2.right * hitDistance, Color.red);
 
+
+			AnimatorStateInfo info = m_animator.GetCurrentAnimatorStateInfo(0);
+			bool isAttacking = info.IsName ("attackShort");
 			m_animator.SetBool(playerAnimAttack, false);
-			if (Input.GetKeyDown (KeyCode.A)) 
+			if (!isAttacking && Input.GetKeyDown (KeyCode.A)) 
 			{
 				m_audioManager.PlaySound(SoundType.GRANNY_STICK_SWING);
 				m_animator.SetBool(playerAnimAttack, true);
 
-				RaycastHit2D enemyHit = Physics2D.CircleCast(transform.position, 0.8f, Vector2.right, 1f, LayerMask.GetMask("Enemy"));
+				/*RaycastHit2D enemyHit = Physics2D.CircleCast(transform.position, 0.8f, Vector2.right, hitDistance, LayerMask.GetMask("Enemy"));
 				if(enemyHit)
 				{
 					//Debug.Log (enemyHit.transform.name);
 					//Debug.Log (enemyHit.transform.tag);
 					enemyHit.transform.gameObject.GetComponent<EnemyController>().Hit();
-				}
+				}*/
 			}
 
 			if(Input.GetButtonDown ("Jump") && (m_gameStateController.GameState == State.LEVELRUNNING) )
@@ -141,7 +147,7 @@ namespace grannyscape
 					currentVelocity = rigidbody2D.velocity.normalized * moveSpeed;
 					rigidbody2D.velocity = currentVelocity;
 				}
-			} 
+			} 	
 
 			if(m_bJump)
 			{
@@ -164,11 +170,20 @@ namespace grannyscape
 				rigidbody2D.AddForce (Vector2.up * 10f, ForceMode2D.Force);
 			}*/
 
+
+			m_animator.SetBool (playerAnimIdle, rigidbody2D.velocity.x == 0.0f);
 			m_animator.SetFloat (playerAnimMove, rigidbody2D.velocity.x);
+
+			if (rigidbody2D.velocity.x < 0.01f && rigidbody2D.velocity.x > -0.01f) {
+				Vector2 v0 = rigidbody2D.velocity;
+				v0.x = 0.0f;
+				rigidbody2D.velocity = v0;
+			}
 		}
 
 		void OnDrawGizmos() 
 		{
+			/*
 			if (Application.isPlaying) 
 			{
 				Gizmos.color = Color.yellow;
@@ -187,7 +202,19 @@ namespace grannyscape
 				z.x = z.x + 1f;
 				Gizmos.DrawWireSphere(z, 0.8f);
 			}
+			*/
 		}
+
+		public void OnActionCainHit()
+		{
+			RaycastHit2D enemyHit = Physics2D.CircleCast(transform.position, 0.8f, Vector2.right, hitDistance, LayerMask.GetMask("Enemy"));
+			if(enemyHit)
+			{
+				//Debug.Log (enemyHit.transform.name);
+				//Debug.Log (enemyHit.transform.tag);
+				enemyHit.transform.gameObject.GetComponent<EnemyController>().Hit();
+			}
+	    }
 
 		void OnCollisionEnter2D(Collision2D coll) 
 		{
