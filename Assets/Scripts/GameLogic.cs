@@ -43,6 +43,9 @@ namespace grannyscape
 
 			m_persistentData = PersistentData.instance;
 			m_persistentData.Coffee = 1f;
+
+			int money = m_persistentData.Money;
+			m_guiController.SetMoney(money);
 		}
 
 		// Update is called once per frame

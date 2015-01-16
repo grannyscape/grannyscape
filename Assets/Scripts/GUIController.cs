@@ -23,17 +23,20 @@ namespace grannyscape
 		private GameObject[] m_endTexts = new GameObject[5];
 
 		private GameObject[] m_maps = new GameObject[6];
-		
-		void Start()
+
+		void Awake()
 		{
 			m_healthBarSlider = GameObject.Find ("HealthSlider");
 			m_moneyText = GameObject.Find ("MoneyText");
-
+			
 			m_peasoupSlider = GameObject.Find ("PeasoupSlider");
-
+			
 			m_gameOverText = GameObject.Find ("GameOver");
 			m_pressAnyKey = GameObject.Find ("PressAnyKey");
+		}
 
+		void Start()
+		{
 			m_gameOverText.SetActive (false);
 			m_pressAnyKey.SetActive (false);
 
